@@ -1,0 +1,2034 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="icon" type="image/png" href="../portfolio/projects/favicons/mu.png">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Meta Business Inbox Growth — Mu Jiun Shie</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Commissioner:wght@100..900&family=IBM+Plex+Mono:wght@400;500;600;700&display=block" rel="stylesheet" />
+  <link rel="stylesheet" href="shared.css" />
+  <style>
+    /* ── MAIN CONTENT ── */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      scroll-snap-type: y mandatory;
+    }
+
+    .project-title {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      padding: 32px 64px 0;
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 400;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: var(--ink2);
+      pointer-events: none;
+      height: 0;
+      overflow: visible;
+    }
+
+    .page-counter {
+      font-weight: 400;
+      letter-spacing: 0;
+      color: var(--ink2);
+    }
+
+    /* ── PANEL: exactly one screen ── */
+    .fixed-layer {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      pointer-events: none;
+    }
+    .fixed-layer.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* ── Overview panel fade-in ── */
+    .panel-fade .overview-left,
+    .panel-fade .single-col {
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1), transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .panel-fade.in-view .overview-left,
+    .panel-fade.in-view .single-col {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .panel {
+      height: 100vh;
+      padding: 32px 64px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      scroll-snap-align: start;
+    }
+
+    .panel-inner {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      margin: 0;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    /* ── OVERVIEW: 2-col layout ── */
+    .overview-header {
+      margin-bottom: 20px;
+    }
+
+    .overview-company {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+
+    .overview-title {
+      font-size: 48px;
+      font-weight: 700;
+      color: var(--ink);
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      margin-bottom: 16px;
+    }
+
+    .overview-subtitle {
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--ink2);
+      line-height: 1.5;
+    }
+
+    .overview-body {
+      display: grid;
+      grid-template-columns: 2fr 3fr;
+      gap: 40px;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .overview-left {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .overview-right {
+      display: flex;
+      align-items: center;
+    }
+
+    .overview-right .slide-img {
+      margin: 0;
+      height: 75%;
+    }
+
+    .overview-right .slide-img img {
+      object-fit: cover;
+    }
+
+    /* ── Overview layers ── */
+    .overview-layer {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: none;
+    }
+
+    .overview-layer.active {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .overview-layer .meta-block {
+      padding: 16px 0;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .overview-layer.active .meta-block {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .overview-layer.active .meta-block:nth-child(1) { transition-delay: 0.1s; }
+    .overview-layer.active .meta-block:nth-child(2) { transition-delay: 0.2s; }
+    .overview-layer.active .meta-block:nth-child(3) { transition-delay: 0.3s; }
+
+    /* ── Role timeline ── */
+    .role-timeline {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin: 8px 0;
+    }
+
+    .role-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 5px 0;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0s, transform 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0s;
+    }
+
+    .overview-layer.active .role-item {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .role-icon {
+      font-size: 16px;
+      flex-shrink: 0;
+      width: 20px;
+      text-align: center;
+    }
+
+    .role-text {
+      font-size: 20px;
+      font-weight: 400;
+      color: var(--ink);
+      line-height: 1.35;
+    }
+
+    .overview-layer.active .role-timeline > .role-item:nth-child(1) { transition-delay: 0.1s; }
+    .overview-layer.active .role-timeline > .role-item:nth-child(2) { transition-delay: 0.15s; }
+    .overview-layer.active .role-timeline > .role-item:nth-child(3) { transition-delay: 0.2s; }
+    .overview-layer.active .role-timeline > .role-item:nth-child(4) { transition-delay: 0.25s; }
+    .overview-layer.active .role-timeline > .role-item:nth-child(5) { transition-delay: 0.3s; }
+
+    /* ── Stat numbers ── */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      row-gap: 24px;
+    }
+
+    .stat-card {
+      padding: 0;
+      background: transparent;
+      border-radius: var(--radius);
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .overview-layer.active .stat-card {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .overview-layer.active .stat-card:nth-child(1) { transition-delay: 0.15s; }
+    .overview-layer.active .stat-card:nth-child(2) { transition-delay: 0.25s; }
+    .overview-layer.active .stat-card:nth-child(3) { transition-delay: 0.35s; }
+
+    .stat-number {
+      font-size: 56px;
+      font-weight: 400;
+      color: var(--ink);
+      line-height: 1.1;
+      margin-bottom: 6px;
+      letter-spacing: -0.02em;
+    }
+
+    .stat-desc {
+      font-size: 16px;
+      font-weight: 400;
+      color: var(--ink);
+      line-height: 1.4;
+    }
+
+    .meta-block-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+
+    /* ── CONTENT ELEMENTS ── */
+    .slide-img {
+      width: 100%;
+      background: var(--surface);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin: 16px 0;
+      display: flex;
+      align-items: center;
+    }
+
+    .slide-img img {
+      width: 100%;
+      display: block;
+      margin: 0 auto;
+    }
+
+    /* ── Divider slide ── */
+    .divider-page {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+    }
+
+    .divider-title {
+      font-size: 48px;
+      font-weight: 700;
+      color: var(--ink);
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      margin-bottom: 12px;
+    }
+
+    .divider-desc {
+      font-size: 20px;
+      font-weight: 400;
+      color: var(--ink2);
+      line-height: 1.4;
+      letter-spacing: -0.01em;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 0.6s ease 0.3s, transform 0.6s ease 0.3s;
+    }
+
+    .focus-bar.revealed .focus-bar-label { display: none !important; }
+    .focus-bar.revealed .focus-bar-detail { display: block !important; }
+
+    /* ── Focus bar staggered entrance ── */
+    .focus-bar-row {
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+    .inbox-growth-focused .focus-bar-row { opacity: 1; transform: translateY(0); }
+    .inbox-growth-focused .focus-bar-row:nth-child(1) { transition-delay: 0.1s; }
+    .inbox-growth-focused .focus-bar-row:nth-child(2) { transition-delay: 0.25s; }
+    .inbox-growth-focused .focus-bar-row:nth-child(3) { transition-delay: 0.4s; }
+
+    /* ── Inbox focuses revealed state ── */
+    .inbox-growth-focused .inbox-step-card { padding: 20px !important; }
+    .inbox-growth-focused .inbox-step-title { font-size: 20px !important; }
+    .inbox-growth-focused .inbox-focuses-area {
+      max-height: 400px !important;
+      opacity: 1 !important;
+    }
+
+    .divider-page.visible .divider-desc {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .section-title {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+
+    .content-h2 {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin: 24px 0 12px;
+    }
+
+    .content-h2:first-child { margin-top: 0; }
+
+    .content-p {
+      font-size: 24px;
+      font-weight: 400;
+      color: var(--ink);
+      line-height: 1.35;
+      max-width: 720px;
+    }
+
+    .content-desc {
+      font-size: 17px;
+      font-weight: 400;
+      color: var(--ink3);
+      line-height: 1.4;
+      padding-top: 16px;
+      letter-spacing: 0.01em;
+    }
+
+    .single-col .content-desc {
+      padding-top: 4px;
+    }
+
+    /* ── 2-COL PANEL LAYOUT ── */
+    .split {
+      display: grid;
+      grid-template-columns: 4fr 6fr;
+      gap: 40px;
+      height: 100%;
+      align-items: center;
+    }
+
+    .split-text { display: flex; flex-direction: column; justify-content: center; }
+
+    .split-img { display: flex; align-items: center; height: 75%; }
+
+    .split-img .slide-img {
+      margin: 0;
+      height: 100%;
+    }
+
+    .split-img .slide-img img {
+      object-fit: contain;
+    }
+
+    /* ── 1-col layout ── */
+    .single-col {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      justify-content: center;
+      gap: 36px;
+    }
+    .single-col:has(.tab-card) {
+      gap: 16px;
+    }
+
+
+    /* ── Process Diagram ── */
+    .process-diagram {
+      width: 100%;
+    }
+    .process-steps {
+      display: flex;
+      align-items: flex-start;
+      gap: 0;
+    }
+    .process-step {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .process-step-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+    }
+    .process-step-header { background: rgba(213,108,0,0.08); }
+    .process-step-num {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      color: var(--accent);
+    }
+    .process-step-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+    .process-arrow {
+      font-size: 20px;
+      color: var(--ink3);
+      flex-shrink: 0;
+      padding: 0 12px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+    }
+    .process-tasks {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 0 4px;
+    }
+    .process-task {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      padding: 8px 12px;
+      background: var(--surface);
+      border-radius: 6px;
+    }
+    .process-task-text {
+      font-size: 13px;
+      font-weight: 450;
+      color: var(--ink);
+    }
+    .process-task-tools {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+    .process-tool {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 500;
+      padding: 3px 8px;
+      border-radius: 10px;
+      background: #fff;
+      color: var(--ink);
+      border: 1px solid var(--border);
+      width: fit-content;
+      flex-shrink: 0;
+    }
+    .process-tool img {
+      width: 12px;
+      height: 12px;
+      object-fit: contain;
+    }
+
+    .process-fullbar {
+      margin-top: 12px;
+      width: 100%;
+    }
+    .process-fullbar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      background: var(--surface);
+      border: 1px dashed var(--border);
+      border-radius: 8px;
+    }
+    .process-fullbar-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--ink);
+    }
+    .process-fullbar-inner:hover {
+      background: rgba(213,108,0,0.06);
+      border-color: var(--accent);
+    }
+    .process-fullbar-tools {
+      display: flex;
+      gap: 6px;
+    }
+
+    .single-col .content-p {
+      max-width: none;
+    }
+
+    .single-col .slide-img {
+      margin: 0;
+    }
+
+    .single-col .slide-img img {
+      width: 100%;
+    }
+
+    /* ── Feedback ── */
+    .feedback {
+      margin-top: 8px;
+      border-top: 1px solid var(--border);
+      padding-top: 8px;
+      flex-shrink: 0;
+    }
+    .feedback-title {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--ink3);
+      margin-bottom: 12px;
+    }
+    .feedback-composer {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .feedback-input {
+      flex: 1;
+      padding: 8px 12px;
+      font-family: var(--sans);
+      font-size: 13px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+      color: var(--ink);
+      outline: none;
+    }
+    .feedback-input:focus {
+      border-color: var(--ink3);
+    }
+    .feedback-input::placeholder {
+      color: var(--ink2);
+    }
+    .feedback-btn {
+      padding: 8px 16px;
+      font-family: var(--sans);
+      font-size: 13px;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      background: var(--ink);
+      color: var(--bg);
+      cursor: pointer;
+    }
+    .feedback-btn:hover {
+      opacity: 0.85;
+    }
+    .feedback-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .feedback-item {
+      display: flex;
+      gap: 10px;
+      padding: 10px 12px;
+      background: var(--surface);
+      border-radius: 8px;
+      font-size: 13px;
+      line-height: 1.4;
+      color: var(--ink);
+    }
+    .feedback-avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--border);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--ink3);
+    }
+    .feedback-content {
+      flex: 1;
+    }
+    .feedback-author {
+      font-weight: 600;
+      font-size: 12px;
+      color: var(--ink3);
+      margin-bottom: 2px;
+    }
+
+    /* ── Tab Card ── */
+    .page-header {
+      margin-bottom: 12px;
+    }
+    .page-header:has(+ .tab-card) .page-title {
+      margin-bottom: 0;
+    }
+    .page-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--ink);
+      letter-spacing: -0.01em;
+      line-height: 1.3;
+      margin-bottom: 8px;
+    }
+    .page-desc {
+      font-size: 16px;
+      font-weight: 400;
+      color: var(--ink2);
+      line-height: 1.4;
+      padding-top: 4px;
+    }
+    .tab-card {
+      background: var(--surface);
+      border-radius: 12px;
+      overflow: hidden;
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .tab-bar {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .tab-btn {
+      padding: 12px 24px;
+      font-family: var(--sans);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--ink2);
+      background: none;
+      border: none;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+    }
+    .tab-btn.active {
+      color: var(--accent);
+      font-weight: 600;
+      border-bottom-color: var(--accent);
+    }
+    .tab-btn:hover {
+      color: var(--ink);
+    }
+    .tab-content {
+      display: none;
+      flex: 1;
+      min-height: 0;
+      padding: 24px;
+      align-items: center;
+      justify-content: center;
+    }
+    .tab-content.active {
+      display: flex;
+    }
+    .tab-content img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+    .tab-placeholder {
+      font-size: 14px;
+      color: var(--ink2);
+    }
+
+    /* ── Step badges (flow descriptions) ── */
+    .step-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: rgba(213, 108, 0, 0.12);
+      color: var(--accent);
+      font-size: 11px;
+      font-weight: 700;
+      flex-shrink: 0;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+    .step-arrow {
+      color: var(--ink3);
+      margin: 0 6px;
+      font-size: 14px;
+      vertical-align: middle;
+    }
+    .step-text {
+      vertical-align: middle;
+      font-size: 15px;
+      font-weight: 400;
+    }
+    .step-text b {
+      font-weight: 500;
+    }
+    .proto-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      background: var(--accent-light);
+      border-radius: 6px;
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 500;
+      text-decoration: none;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+    .proto-link:hover { background: #F9E8D4; }
+    .proto-link svg { flex-shrink: 0; }
+
+    /* ── Journey card ── */
+    .journey-card {
+      background: var(--surface);
+      border: 1px solid transparent;
+      transition: all 0.25s ease;
+    }
+    .journey-card.highlighted {
+      background: var(--accent-light);
+      border: 1px solid var(--accent);
+    }
+    .journey-pill {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 500;
+      color: #fff;
+      background: var(--accent);
+      border: 1px solid var(--accent);
+      border-radius: 99px;
+      padding: 2px 8px;
+      margin-left: 6px;
+    }
+
+    /* ── Impact grid ── */
+    .impact-grid {
+      display: grid;
+      grid-template-columns: 6fr 4fr;
+      gap: 16px;
+      width: 100%;
+    }
+    .impact-stats {
+      background: var(--surface);
+      border-radius: 16px;
+      padding: 32px;
+      border: none;
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 0.9fr;
+      gap: 12px 32px;
+      justify-content: stretch;
+      align-content: center;
+    }
+    .impact-stat {
+      text-align: left;
+    }
+    .impact-number {
+      font-size: 55px;
+      font-weight: 400;
+      color: var(--ink);
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+    }
+    .impact-label {
+      font-size: 14px;
+      color: var(--ink2);
+      margin-top: 6px;
+    }
+    .impact-quotes {
+      background: var(--surface);
+      border-radius: 16px;
+      padding: 28px 32px;
+      border: none;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 24px;
+    }
+    .impact-quote + .impact-quote {
+      border-top: 1px solid var(--border);
+      padding-top: 24px;
+    }
+    .quote-text {
+      font-size: 17px;
+      color: var(--ink);
+      line-height: 1.3;
+    }
+    .quote-author {
+      font-size: 14px;
+      color: var(--ink2);
+      margin-top: 6px;
+    }
+
+    /* ── Shape/MVP/Wrapup panels: vertical center + constrain height ── */
+    .panel[id^="shape-"] .panel-inner,
+    .panel[id^="mvp-"] .panel-inner,
+    .panel[id^="wrapup-"] .panel-inner {
+      height: calc(100vh - 96px);
+    }
+    .panel[id^="shape-"] .single-col,
+    .panel[id^="mvp-"] .single-col,
+    .panel[id^="wrapup-"] .single-col {
+      height: 100%;
+    }
+    .panel[id^="shape-"] .tab-card,
+    .panel[id^="mvp-"] .tab-card {
+      max-height: 80%;
+    }
+    .panel[id^="mvp-flow"] .tab-card {
+      max-height: none;
+    }
+
+    /* ── One-Pager PRD ── */
+    .prd {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      overflow-y: auto;
+      padding: 40px 0 8px;
+      gap: 0;
+      max-width: 960px;
+    }
+
+    .prd-header {
+      border-bottom: none;
+    }
+
+    .prd-title {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--ink);
+      letter-spacing: -0.01em;
+      line-height: 1.3;
+      margin-bottom: 12px;
+    }
+
+    .prd-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-family: var(--sans);
+      font-size: 13px;
+      color: var(--ink2);
+    }
+
+    .prd-meta-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .prd-meta-label {
+      font-weight: 600;
+      color: var(--ink3);
+      min-width: 60px;
+    }
+
+    .prd-meta-value {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .prd-step {
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--ink3);
+      padding: 3px 8px;
+      background: var(--surface);
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+
+    .prd-step.active {
+      background: var(--accent);
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .prd-step.done {
+      background: var(--accent);
+      color: #fff;
+      opacity: 0.5;
+    }
+
+    .prd-step-arrow {
+      font-size: 9px;
+      color: var(--ink3);
+    }
+
+    .prd-check {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .prd-body {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding-top: 24px;
+    }
+
+    .prd-card {
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 20px 24px;
+    }
+
+    .prd-section-title {
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+
+    .prd-text {
+      font-size: 20px;
+      font-weight: 400;
+      color: var(--ink);
+      line-height: 1.3;
+      padding-bottom: 4px;
+      letter-spacing: 0.003em;
+    }
+
+    .prd-text b {
+      font-weight: 600;
+    }
+
+    .prd-metrics {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .prd-metric {
+      background: var(--bg);
+      border-radius: 10px;
+      padding: 16px 18px;
+    }
+
+    .prd-metric-number {
+      font-size: 40px;
+      font-weight: 600;
+      color: var(--ink);
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      margin-bottom: 6px;
+    }
+
+    .prd-metric-label {
+      font-size: 13px;
+      color: var(--ink2);
+      line-height: 1.4;
+    }
+
+    .prd-target-metrics {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .prd-target {
+      background: var(--bg);
+      border-radius: 10px;
+      padding: 16px 18px;
+    }
+
+    .prd-target-number {
+      font-size: 36px;
+      font-weight: 600;
+      color: var(--ink);
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      margin-bottom: 6px;
+    }
+
+    .prd-target-label {
+      font-size: 13px;
+      color: var(--ink2);
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="shell">
+
+    <!-- ── LEFT NAV ── -->
+    <nav class="side">
+      <div class="side-section" style="margin-bottom: 20px;">
+        <p class="side-label">Page</p>
+        <div class="dropdown" id="pageDropdown">
+          <div class="dropdown-toggle" onclick="this.parentElement.classList.toggle('open')">Project 1</div>
+          <div class="dropdown-menu">
+            <a class="dropdown-option" href="intro.html#s-17">Intro</a>
+            <a class="dropdown-option current" href="project1.html">Project 1</a>
+            <a class="dropdown-option" href="project2.html">Project 2</a>
+            <a class="dropdown-option" href="project3.html">Project 3</a>
+          </div>
+        </div>
+      </div>
+      <div class="side-section">
+        <p class="side-label">Agenda</p>
+
+        <a class="nav-item active" data-target="cover">Cover</a>
+        <a class="nav-item" data-target="overview">Overview</a>
+
+        <a class="nav-item" data-target="ai-workflow">AI Workflow</a>
+
+        <a class="nav-item" data-target="ecosystem-divider">Context</a>
+        <div class="nav-sub" data-parent="inbox-growth">
+          <a class="nav-item" data-target="finding-1">Finding</a>
+          <a class="nav-item" data-target="solution">Solution</a>
+          <a class="nav-item" data-target="design-goals">Design Focus</a>
+        </div>
+
+        <a class="nav-item" data-target="process-divider">Tool Design 0→1</a>
+        <div class="nav-sub" data-parent="process">
+          <a class="nav-item" data-target="shape-baseline">Baseline</a>
+          <a class="nav-item" data-target="shape-ai-1">AI Designs</a>
+          <a class="nav-item" data-target="shape-decision">Decision</a>
+        </div>
+
+        <a class="nav-item" data-target="mvp-divider">E2E Flow Exploration</a>
+        <div class="nav-sub" data-parent="mvp">
+          <a class="nav-item" data-target="mvp-scope">Scope</a>
+          <a class="nav-item" data-target="mvp-entry-1">1 · Entry Point</a>
+          <a class="nav-item" data-target="mvp-select-ad">2 · Select Ad Campaign</a>
+          <a class="nav-item" data-target="mvp-done">4 · Return</a>
+        </div>
+
+        <a class="nav-item" data-target="mvp-launch-divider">MVP Experiment</a>
+        <div class="nav-sub" data-parent="mvp-launch">
+          <a class="nav-item" data-target="mvp-flow4">Tool E2E</a>
+          <a class="nav-item" data-target="mvp-final-scope">Scope</a>
+        </div>
+
+        <a class="nav-item" data-target="wrapup-divider">Impact & Learning</a>
+        <div class="nav-sub" data-parent="wrapup">
+          <a class="nav-item" data-target="wrapup-impact">Impact</a>
+          <a class="nav-item" data-target="wrapup-learning">Learning</a>
+          <a class="nav-item" data-target="new-workflow">New Workflow</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- ── MAIN CONTENT ── -->
+    <div class="main" id="main">
+
+      <p class="project-title"><span class="page-counter" id="pageCounter">1/20</span> • Bulk Reply Tool</p>
+
+      <!-- ═══ OVERVIEW ═══ -->
+      <section class="panel panel-fade no-snap" id="cover" data-group="overview">
+        <div class="panel-inner">
+          <div class="overview-body">
+            <div class="overview-left">
+              <div class="overview-header">
+                <p class="overview-company">New Tool</p>
+                <h1 class="overview-title">Introduced<br>Bulk Replies for Business Inbox</h1>
+                <p class="overview-subtitle">Product Design Lead + 1 Tech Lead, 2 Eng, 1 PM<br>Timeline: 1 Month (Launched in Mar 2026)</p>
+              </div>
+            </div>
+            <div class="overview-right">
+              <div class="slide-img"><img src="img_project/14/1.jpg" alt="Overview" /></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel panel-fade no-snap" id="overview" data-group="overview">
+        <div class="panel-inner">
+          <div class="overview-body">
+            <div class="overview-left">
+              <div class="meta-block" style="margin-bottom:24px;">
+                <p class="meta-block-label">Overview</p>
+                <p class="content-p" style="font-size:20px">Introduced a <b>new tool</b> in Business Inbox to address a product gap; pushed for a <b>simple, focused MVP</b> to drive adoption and a fast implementation</p>
+              </div>
+              <div class="meta-block" style="margin-bottom:24px;">
+                <p class="meta-block-label">Deliverables</p>
+                <p class="content-p" style="font-size:20px;margin:8px 0 0;">Web tool, end-to-end flow, upsell logic</p>
+              </div>
+              <div class="meta-block">
+                <p class="meta-block-label">Impact</p>
+                <p class="content-p" style="font-size:20px;margin:8px 0 0;">10% goal → <b>27% actual</b> adoption</p>
+              </div>
+            </div>
+            <div class="overview-right">
+              <div class="slide-img"><img src="img_project/14/1.jpg" alt="Overview" /></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="ai-workflow" data-group="ai-workflow">
+        <div class="panel-inner">
+          <div class="single-col" style="gap:24px;">
+            <div>
+              <h2 class="content-h2" style="margin-top:0">AI Workflow</h2>
+              <p class="content-p">Cut design delivery and alignment <b>from 3 months to 1 month</b> with AI-powered workflows</p>
+            </div>
+
+            <!-- Step Diagram -->
+            <div class="process-diagram">
+              <!-- Step Headers -->
+              <div class="process-steps">
+                <div class="process-step">
+                  <div class="process-step-header">
+                    <span class="process-step-num">01</span>
+                    <span class="process-step-name">Understand</span>
+                    <span style="font-size:13px;font-weight:450;color:var(--ink2);margin-left:auto;">1 week</span>
+                  </div>
+                  <div class="process-tasks">
+                    <div class="process-task">
+                      <span class="process-task-text">Analyze problems</span>
+                      <div class="process-task-tools"><span class="process-tool"><img src="images/logo/metalogo2.png" alt="">Internal AIs</span><span class="process-tool"><img src="images/logo/claude-color.png" alt="">Claude Code</span></div>
+                    </div>
+                    <div class="process-task">
+                      <span class="process-task-text">Visualize data</span>
+                      <div class="process-task-tools"><span class="process-tool"><img src="images/logo/claude-color.png" alt="">Claude Code</span></div>
+                    </div>
+                    <div class="process-task">
+                      <span class="process-task-text">Dogfood to build empathy</span>
+                      <div class="process-task-tools"><span class="process-tool"><svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="5" r="3"/><path d="M2.5 14a5.5 5.5 0 0111 0z"/></svg>Human effort</span></div>
+                    </div>
+                  </div>
+                </div>
+
+                <span class="process-arrow">→</span>
+
+                <div class="process-step">
+                  <div class="process-step-header">
+                    <span class="process-step-num">02</span>
+                    <span class="process-step-name">Design Exploration</span>
+                    <span style="font-size:13px;font-weight:450;color:var(--ink2);margin-left:auto;">2-3 weeks</span>
+                  </div>
+                  <div class="process-tasks">
+                    <div class="process-task">
+                      <span class="process-task-text">Create a baseline</span>
+                      <div class="process-task-tools"><span class="process-tool"><img src="images/logo/Figma-logo.svg" alt="">Figma</span><span class="process-tool"><svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="5" r="3"/><path d="M2.5 14a5.5 5.5 0 0111 0z"/></svg>Human effort</span></div>
+                    </div>
+                    <div class="process-task">
+                      <span class="process-task-text">Explore early concept</span>
+                      <div class="process-task-tools"><span class="process-tool"><img src="images/logo/Figma-logo.svg" alt="">Figma Make</span><span class="process-tool"><img src="images/logo/claude-color.png" alt="">Claude Code</span><span class="process-tool"><img src="images/logo/Visual_Studio_Code_1.35_icon.svg.png" alt="">VS Code</span></div>
+                    </div>
+                    <div class="process-task">
+                      <span class="process-task-text">Build prototype and iteration</span>
+                      <div class="process-task-tools"><span class="process-tool"><img src="images/logo/claude-color.png" alt="">Claude Code</span><span class="process-tool"><img src="images/logo/Visual_Studio_Code_1.35_icon.svg.png" alt="">VS Code</span></div>
+                    </div>
+                  </div>
+                </div>
+
+                <span class="process-arrow">→</span>
+
+                <div class="process-step">
+                  <div class="process-step-header">
+                    <span class="process-step-num">03</span>
+                    <span class="process-step-name">Delivery</span>
+                  </div>
+                  <div class="process-tasks">
+                    <div class="process-task">
+                      <span class="process-task-text">Share final design with Engineer</span>
+                      <div class="process-task-tools"><span class="process-tool"><img src="images/logo/Figma-logo.svg" alt="">Figma</span><span class="process-tool"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6.5"/><path d="M8 1.5C8 1.5 5 5 5 8s3 6.5 3 6.5M8 1.5C8 1.5 11 5 11 8s-3 6.5-3 6.5M1.5 8h13"/></svg>Html Prototype</span></div>
+                    </div>
+                    <div class="process-task">
+                      <span class="process-task-text">Land diff for small bugs</span>
+                      <div class="process-task-tools"><span class="process-tool"><img src="images/logo/claude-color.png" alt="">Claude Code</span></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Full-process bar -->
+              <div class="process-fullbar">
+                <a class="process-fullbar-inner" href="inbox-ai-workflow.html" target="_blank" rel="noopener" style="text-decoration:none;">
+                  <span class="process-fullbar-label"><b>Interactive PRD</b> (Html) to aggregate PRD, design, analysis together</span>
+                  <span class="process-fullbar-tools">
+                    <span class="process-tool"><img src="images/logo/claude-color.png" alt="">Claude Code</span>
+                    <span class="process-tool"><img src="images/logo/Visual_Studio_Code_1.35_icon.svg.png" alt="">VS Code</span>
+                  </span>
+                </a>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ ECOSYSTEM ═══ -->
+      <section class="panel" id="ecosystem-divider" data-group="inbox-growth">
+        <div class="panel-inner divider-page">
+          <p class="divider-title">Context</p>
+          <p class="divider-desc">Why Meta built this new tool?</p>
+        </div>
+      </section>
+
+      <section class="panel" id="finding-1" data-group="inbox-growth" data-fixed-layers>
+        <div class="panel-inner" style="position:relative;">
+          <div class="fixed-layer active">
+            <div class="split">
+              <div class="split-text">
+                <h2 class="content-h2" style="margin-top:0">Finding<span style="letter-spacing:0">&nbsp;-&nbsp;</span>Advertiser Problem</h2>
+                <p class="content-p">Advertisers receiving high-volume messages <b>can't keep up with manual replies</b>, leading to lower ad conversion</p>
+                <p class="content-desc">10+ messages/day → response rate declines</p>
+              </div>
+              <div class="split-img">
+                <div class="slide-img"><img src="img_project/14/4.jpg" alt="Finding" style="width:100%;display:block;border-radius:8px;" /></div>
+              </div>
+            </div>
+          </div>
+          <div class="fixed-layer">
+            <div class="split">
+              <div class="split-text">
+                <h2 class="content-h2" style="margin-top:0">Finding<span style="letter-spacing:0">&nbsp;-&nbsp;</span>Competitor Research</h2>
+                <p class="content-p">10% of advertisers <b>pay for third-party tools to send bulk replies</b>, re-engaging hundreds of customers at once</p>
+                <p class="content-desc">Proves the user need and revenue potential</p>
+              </div>
+              <div class="split-img">
+                <div class="slide-img" style="position:relative;">
+                  <div style="position:absolute;top:0;left:0;right:0;display:flex;gap:0;border-bottom:1px solid var(--border);background:var(--surface);z-index:2;border-radius:var(--radius) var(--radius) 0 0;">
+                    <button class="tab-btn active" data-tab="ex1" onclick="switchFindingTab('ex1', this)">Example 1</button>
+                    <button class="tab-btn" data-tab="ex2" onclick="switchFindingTab('ex2', this)">Example 2</button>
+                  </div>
+                  <div id="finding-tab-ex1" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;padding:56px 34px 24px;">
+                    <img src="img_project/14/broadcast.webp" alt="Broadcast Tool" style="max-width:100%;max-height:100%;object-fit:contain;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.12);" />
+                  </div>
+                  <div id="finding-tab-ex2" style="width:100%;height:100%;display:none;align-items:center;justify-content:center;padding:56px 34px 24px;">
+                    <img src="img_project/14/bombot-kh-03.jpg" alt="Bulk Message Tool" style="max-width:100%;max-height:100%;object-fit:contain;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.12);" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="panel" id="finding-2" data-group="inbox-growth" data-nav="finding-1" style="display:none"></section>
+
+      <section class="panel no-snap" id="solution" data-group="inbox-growth" data-nav="solution">
+        <div class="panel-inner">
+          <div class="split">
+            <div class="split-text">
+              <h2 class="content-h2" style="margin-top:0">Solution</h2>
+              <p class="content-p">Introduced a <b>native bulk reply tool</b>, making it accessible to all advertisers and monetizable for Meta</p>
+              <p class="content-desc">Tested MVP with 10% advertisers</p>
+            </div>
+            <div class="split-img">
+              <div class="slide-img"><img src="img_project/14/3.jpg" alt="Solution" style="width:100%;height:100%;object-fit:contain;border-radius:8px;" /></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel no-snap" id="design-goals" data-group="inbox-growth" data-nav="design-goals">
+        <div class="panel-inner">
+          <div class="split">
+            <div class="split-text">
+              <h2 class="content-h2" style="margin-top:0">Design Focus</h2>
+              <p class="content-p">Helped advertisers discover and adopt the tool through a <b>simple, easy-to-learn</b> experience</p>
+              <p class="content-desc">Scope: tool design 0→1, end-to-end flow</p>
+            </div>
+            <div class="split-img">
+              <div class="slide-img"><img src="img_project/14/3.jpg" alt="Design Goals" style="width:100%;height:100%;object-fit:contain;border-radius:8px;" /></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+
+      <!-- ═══ PROCESS ═══ -->
+      <section class="panel" id="process-divider" data-group="process">
+        <div class="panel-inner divider-page">
+          <p class="divider-title">Tool Design 0→1</p>
+          <p class="divider-desc">How I used AI to design tool from scratch and push for simplicity</p>
+        </div>
+      </section>
+
+      <!-- ═══ SHAPE CONCEPTS ═══ -->
+      <section class="panel" id="shape-baseline" data-group="process" data-nav="shape-baseline">
+        <div class="panel-inner">
+          <div class="single-col" style="gap:16px;">
+            <div>
+              <h2 class="content-h2" style="margin-top:0">Baseline</h2>
+              <p class="content-p">Tried AI first but failed. Created a baseline experience myself to push for simplicity</p>
+            </div>
+            <div class="tab-card" style="flex:1;">
+              <div class="tab-bar">
+                <button class="tab-btn active" onclick="switchTab('shape-baseline','ai',this)">AI Exploration</button>
+                <button class="tab-btn" onclick="switchTab('shape-baseline','mine',this)">My Exploration</button>
+              </div>
+              <div class="tab-content active" id="tab-shape-baseline-ai" style="background:#F6F6F6;">
+                <img src="img_project/14/figma-2.jpg" alt="AI Exploration" style="width:100%;display:block;border-radius:12px;" />
+              </div>
+              <div class="tab-content" id="tab-shape-baseline-mine" style="background:#F6F6F6;">
+                <img src="img_project/14/figma-3.jpg" alt="My Exploration" style="width:100%;display:block;border-radius:12px;" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="shape-ai-1" data-group="process" data-nav="shape-ai-1">
+        <div class="panel-inner">
+          <div class="single-col" style="gap:16px;">
+            <div style="flex-shrink:0;">
+              <h2 class="content-h2" style="margin-top:0">AI Designs</h2>
+              <p class="content-p">Used Figma Make to explore designs and made judgment with product knowledge/sense</p>
+            </div>
+            <div style="flex:1;min-height:0;display:flex;justify-content:center;align-items:stretch;width:100%;max-height:80%;background:#f0f2f5;border-radius:var(--radius);">
+              <div style="width:80%;height:100%;overflow:hidden;">
+                <iframe style="border:none;width:138.89%;height:138.89%;transform:scale(0.72);transform-origin:top center;margin-left:-19.44%;" src="https://game-story-64338913.figma.site" allowfullscreen></iframe>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <section class="panel" id="shape-decision" data-group="process" data-nav="shape-decision">
+        <div class="panel-inner">
+          <div class="single-col" style="gap:16px;">
+            <div style="flex-shrink:0;">
+              <h2 class="content-h2" style="margin-top:0">Decision</h2>
+              <p class="content-p">Kept two key features for the MVP and turned the preview into a button to track usage</p>
+              <p class="content-desc">2 considerations: keep it simple, gather learning from the experiment</p>
+            </div>
+            <div class="tab-card" style="flex:1;">
+              <div class="tab-bar">
+                <button class="tab-btn active" onclick="switchTab('shape-decision','final',this)">Final</button>
+                <button class="tab-btn" onclick="switchTab('shape-decision','ds',this)">Design System Applied</button>
+              </div>
+              <div class="tab-content active" id="tab-shape-decision-final" style="background:#F6F6F6;">
+                <img src="img_project/14/final-1.png" alt="Final" style="width:100%;display:block;border-radius:12px;" />
+              </div>
+              <div class="tab-content" id="tab-shape-decision-ds" style="background:#F6F6F6;">
+                <img src="img_project/14/final-2.png" alt="Design System Applied" style="width:100%;display:block;border-radius:12px;" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ MVP EXPLORATION ═══ -->
+      <section class="panel" id="mvp-divider" data-group="mvp">
+        <div class="panel-inner divider-page">
+          <p class="divider-title">E2E Flow Exploration</p>
+          <p class="divider-desc">How I pushed for a simple e2e journey and a focused MVP scope</p>
+        </div>
+      </section>
+
+      <section class="panel" id="mvp-scope" data-group="mvp" data-nav="mvp-scope">
+        <div class="panel-inner">
+          <div class="single-col" style="gap:24px;justify-content:center;">
+            <div>
+              <h2 class="content-h2" style="margin-top:0">Scope</h2>
+              <p class="content-p">Negotiated with XFN on steps 1, 2, and 4 to land a simpler flow</p>
+              <p class="content-desc">Too many features/steps would distract users and dilute the results</p>
+            </div>
+            <div>
+              <div style="display:grid;grid-template-columns:1fr 24px 1fr 24px 1fr 24px 1fr;align-items:stretch;align-content:start;width:100%;">
+                <div style="background:var(--surface);border-radius:var(--radius);padding:14px 28px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+                  <p style="font-size:16px;font-weight:600;color:var(--ink);">1 · Entry Point</p>
+                </div>
+                <span style="font-size:24px;color:var(--ink3);text-align:center;align-self:center;">→</span>
+                <div style="background:var(--surface);border-radius:var(--radius);padding:14px 28px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+                  <p style="font-size:16px;font-weight:600;color:var(--ink);">2 · Select ad campaign</p>
+                </div>
+                <span style="font-size:24px;color:var(--ink3);text-align:center;align-self:center;">→</span>
+                <div style="background:var(--surface);border-radius:var(--radius);padding:14px 28px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+                  <p style="font-size:16px;font-weight:600;color:var(--ink);">3 · Set up bulk reply</p>
+                  <span class="journey-pill" style="margin-top:8px;display:inline-block;">design completed</span>
+                </div>
+                <span style="font-size:24px;color:var(--ink3);text-align:center;align-self:center;">→</span>
+                <div style="background:var(--surface);border-radius:var(--radius);padding:14px 28px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+                  <p style="font-size:16px;font-weight:600;color:var(--ink);">4 · Return</p>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:6px;margin-top:12px;">
+                  <div class="journey-card" style="border-radius:6px;padding:12px 14px;font-size:15px;color:var(--ink);font-weight:450;text-align:center;">Click upsells</div>
+                  <div class="journey-card" style="border-radius:6px;padding:12px 14px;font-size:15px;color:var(--ink);font-weight:450;text-align:center;">Click permanent entry</div>
+                </div>
+                <div></div>
+                <div style="display:flex;flex-direction:column;gap:6px;margin-top:12px;">
+                  <div class="journey-card" style="border-radius:6px;padding:12px 14px;font-size:15px;color:var(--ink);font-weight:450;text-align:center;">View ad campaign list</div>
+                  <div class="journey-card" style="border-radius:6px;padding:12px 14px;font-size:15px;color:var(--ink);font-weight:450;text-align:center;">Select ad campaign</div>
+                </div>
+                <div></div>
+                <div style="display:flex;flex-direction:column;gap:6px;margin-top:12px;">
+                  <div class="journey-card" style="border-radius:6px;padding:12px 14px;font-size:15px;color:var(--ink);font-weight:450;text-align:center;">Select audience</div>
+                  <div class="journey-card" style="border-radius:6px;padding:12px 14px;font-size:15px;color:var(--ink);font-weight:450;text-align:center;">Edit message</div>
+                  <div class="journey-card" style="border-radius:6px;padding:12px 14px;font-size:15px;color:var(--ink);font-weight:450;text-align:center;">Submit</div>
+                  <div class="journey-card" style="border-radius:6px;padding:12px 14px;font-size:15px;color:var(--ink);font-weight:450;text-align:center;">See confirmation screen</div>
+                  <div class="journey-card" style="border-radius:6px;padding:12px 14px;font-size:15px;color:var(--ink);font-weight:450;text-align:center;">See sending status</div>
+                </div>
+                <div></div>
+                <div style="display:flex;flex-direction:column;gap:6px;margin-top:12px;">
+                  <div class="journey-card" style="border-radius:6px;padding:12px 14px;font-size:15px;color:var(--ink);font-weight:450;text-align:center;">See upsell with conditions</div>
+                  <div class="journey-card" style="border-radius:6px;padding:12px 14px;font-size:15px;color:var(--ink);font-weight:450;text-align:center;">See upsell with label applied</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="mvp-entry-1" data-group="mvp" data-nav="mvp-entry-1" data-fixed-layers>
+        <div class="panel-inner" style="position:relative;">
+          <div class="fixed-layer active">
+            <div class="single-col" style="gap:16px;">
+              <p style="font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;color:var(--accent);margin:0;">1 · Entry Point</p>
+              <div style="flex-shrink:0;">
+                <p class="content-p"><b>Turned down the permanent entry</b> to protect system consistency and avoid future risk</p>
+              </div>
+              <div class="slide-img" style="flex:1;display:flex;align-items:center;justify-content:center;background:#F6F6F6;max-height:80%;">
+                <img src="img_project/14/entry-1.png" alt="Upsell entry" style="width:100%;display:block;border-radius:12px;" />
+              </div>
+            </div>
+          </div>
+          <div class="fixed-layer">
+            <div class="single-col" style="gap:16px;">
+              <p style="font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;color:var(--accent);margin:0;">1 · Entry Point</p>
+              <div style="flex-shrink:0;">
+                <p class="content-p">Aligned on the <b>upsell as the only entry point</b>, with a <b>new card design</b> to draw attention</p>
+              </div>
+              <div class="slide-img" style="flex:1;display:flex;align-items:center;justify-content:center;background:#F6F6F6;max-height:80%;">
+                <img src="img_project/14/entry-2.png" alt="Upsell entry" style="width:100%;display:block;border-radius:12px;" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="mvp-entry-2" data-group="mvp" data-nav="mvp-entry-1" style="display:none"></section>
+
+      <section class="panel" id="mvp-select-ad" data-group="mvp" data-nav="mvp-select-ad">
+        <div class="panel-inner">
+          <div class="single-col" style="gap:16px;">
+            <p style="font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;color:var(--accent);margin:0;">2 · Select ad campaign</p>
+            <div style="flex-shrink:0;">
+              <p class="content-p"><b>Explored 2 flow variants</b> for campaign selection, convinced XFN to pursue the simpler one</p>
+            </div>
+            <div class="tab-card" style="flex:1;max-height:80%;">
+              <div class="tab-bar">
+                <button class="tab-btn active" onclick="switchTab('mvp-select-ad','idea1',this)">Engineer's Proposal</button>
+                <button class="tab-btn" onclick="switchTab('mvp-select-ad','idea2',this)">My Proposal</button>
+              </div>
+              <div class="tab-content active" id="tab-mvp-select-ad-idea1" style="background:#F6F6F6;padding:16px 0;flex:1;min-height:0;">
+                <div style="width:80%;height:96%;position:relative;overflow:hidden;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.08);">
+                  <iframe style="border:none;position:absolute;top:0;left:0;width:166.67%;height:166.67%;transform:scale(0.6);transform-origin:top left;" src="prototype/ubi-inbox-2.html" allowfullscreen></iframe>
+                </div>
+              </div>
+              <div class="tab-content" id="tab-mvp-select-ad-idea2" style="background:#F6F6F6;padding:16px 0;flex:1;min-height:0;">
+                <div style="width:80%;height:96%;position:relative;overflow:hidden;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.08);">
+                  <iframe style="border:none;position:absolute;top:0;left:0;width:166.67%;height:166.67%;transform:scale(0.6);transform-origin:top left;" src="prototype/ubi-inbox-3.html" allowfullscreen></iframe>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="mvp-done" data-group="mvp" data-nav="mvp-done">
+        <div class="panel-inner">
+          <div class="single-col" style="gap:16px;">
+            <p style="font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;color:var(--accent);margin:0;">4 · Return</p>
+            <div style="flex-shrink:0;">
+              <p class="content-p">Considered <b>system vs. user controll</b> to re-surface the upsell, used UXR to validate</p>
+            </div>
+            <div class="slide-img" style="flex:1;display:flex;align-items:center;justify-content:center;background:#F6F6F6;max-height:80%;">
+              <img src="img_project/14/entry-3.png" alt="Done experience" style="width:100%;display:block;border-radius:12px;" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <section class="panel" id="mvp-launch-divider" data-group="mvp-launch">
+        <div class="panel-inner divider-page">
+          <p class="divider-title">MVP Experiment</p>
+          <p class="divider-desc">What we shipped and what we wanted to learn</p>
+        </div>
+      </section>
+
+      <section class="panel" id="mvp-flow4" data-group="mvp-launch" data-nav="mvp-flow4">
+        <div class="panel-inner">
+          <div class="single-col" style="gap:16px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;font-size:13px;padding-top:8px;">
+              <p class="page-desc" style="font-size:13px;"><span class="step-badge">1</span><span class="step-text"><b>Discover/Re-enter from upsell</b></span><span class="step-arrow">→</span><span class="step-badge">2</span><span class="step-text"><b>Check campaign/audience, edit message</b></span><span class="step-arrow">→</span><span class="step-badge">3</span><span class="step-text"><b>Confirmation Screen</b></span></p>
+              <a class="proto-link" href="prototype/ubi-inbox-5.html" target="_blank"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9.3V13a1.3 1.3 0 0 1-1.3 1.3H3.3A1.3 1.3 0 0 1 2 13V5.6A1.3 1.3 0 0 1 3.3 4.3H7"/><path d="M10 2h4v4"/><path d="M6.7 9.3L14 2"/></svg>Prototype</a>
+            </div>
+            <div class="tab-card" style="flex:1;border:1px solid var(--border);border-radius:12px;background:transparent;position:relative;">
+              <iframe style="border:none;position:absolute;top:0;left:0;width:125%;height:125%;transform:scale(0.8);transform-origin:top center;margin-left:-12.5%;" src="prototype/ubi-inbox-5.html" allowfullscreen></iframe>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="mvp-final-scope" data-group="mvp-launch" data-nav="mvp-final-scope">
+        <div class="panel-inner">
+          <div class="single-col" style="gap:24px;justify-content:center;">
+            <div>
+              <h2 class="content-h2" style="margin-top:0">Scope</h2>
+              <p class="content-p">Narrowed the scope and pushed for pre-fill to further simplify the experience</p>
+            </div>
+            <div>
+              <div style="display:grid;grid-template-columns:1fr 24px 1fr 24px 1fr 24px 1fr;align-items:start;align-content:start;width:100%;">
+                <div style="background:var(--surface);border-radius:var(--radius);padding:28px;text-align:center;">
+                  <p style="font-size:16px;font-weight:600;color:var(--ink);">1 · Entry Point</p>
+                </div>
+                <span style="font-size:24px;color:var(--ink3);text-align:center;align-self:center;">→</span>
+                <div style="background:var(--surface);border-radius:var(--radius);padding:28px;text-align:center;">
+                  <p style="font-size:16px;font-weight:600;color:var(--ink);">2 · Select ad campaign</p>
+                </div>
+                <span style="font-size:24px;color:var(--ink3);text-align:center;align-self:center;">→</span>
+                <div style="background:var(--surface);border-radius:var(--radius);padding:28px;text-align:center;">
+                  <p style="font-size:16px;font-weight:600;color:var(--ink);">3 · Set up bulk reply</p>
+                </div>
+                <span style="font-size:24px;color:var(--ink3);text-align:center;align-self:center;">→</span>
+                <div style="background:var(--surface);border-radius:var(--radius);padding:28px;text-align:center;">
+                  <p style="font-size:16px;font-weight:600;color:var(--ink);">4 · Return</p>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:6px;margin-top:12px;">
+                  <div class="journey-card highlighted" style="border-radius:6px;padding:12px 14px;font-size:15px;color:var(--ink);font-weight:450;text-align:center;">Click upsells</div>
+                  <div class="journey-card" style="border-radius:6px;padding:12px 14px;font-size:15px;color:var(--ink);font-weight:450;text-align:center;">Click permanent entry</div>
+                </div>
+                <div></div>
+                <div style="display:flex;flex-direction:column;gap:6px;margin-top:12px;">
+                  <div class="journey-card" style="border-radius:6px;padding:12px 14px;font-size:15px;color:var(--ink);font-weight:450;text-align:center;">View ad campaign list</div>
+                  <div class="journey-card highlighted" style="border-radius:6px;padding:12px 14px;font-size:15px;color:var(--ink);font-weight:450;text-align:center;">Select ad campaign <span class="journey-pill">pre-fill</span></div>
+                </div>
+                <div></div>
+                <div style="display:flex;flex-direction:column;gap:6px;margin-top:12px;">
+                  <div class="journey-card highlighted" style="border-radius:6px;padding:12px 14px;font-size:15px;color:var(--ink);font-weight:450;text-align:center;">Select audience <span class="journey-pill">pre-fill</span></div>
+                  <div class="journey-card highlighted" style="border-radius:6px;padding:12px 14px;font-size:15px;color:var(--ink);font-weight:450;text-align:center;">Edit message <span class="journey-pill">pre-fill</span></div>
+                  <div class="journey-card highlighted" style="border-radius:6px;padding:12px 14px;font-size:15px;color:var(--ink);font-weight:450;text-align:center;">Submit</div>
+                  <div class="journey-card highlighted" style="border-radius:6px;padding:12px 14px;font-size:15px;color:var(--ink);font-weight:450;text-align:center;">See confirmation screen</div>
+                  <div class="journey-card highlighted" style="border-radius:6px;padding:12px 14px;font-size:15px;color:var(--ink);font-weight:450;text-align:center;">See sending status</div>
+                </div>
+                <div></div>
+                <div style="display:flex;flex-direction:column;gap:6px;margin-top:12px;">
+                  <div class="journey-card highlighted" style="border-radius:6px;padding:12px 14px;font-size:15px;color:var(--ink);font-weight:450;text-align:center;">See upsell with conditions</div>
+                  <div class="journey-card" style="border-radius:6px;padding:12px 14px;font-size:15px;color:var(--ink);font-weight:450;text-align:center;">See upsell with label applied</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ WRAP-UP ═══ -->
+      <section class="panel" id="wrapup-divider" data-group="wrapup">
+        <div class="panel-inner divider-page">
+          <p class="divider-title">Impact & Learning</p>
+          <p class="divider-desc">Impact and learnings</p>
+        </div>
+      </section>
+
+      <section class="panel" id="wrapup-impact" data-group="wrapup" data-nav="wrapup-impact">
+        <div class="panel-inner">
+          <div class="single-col">
+            <div>
+              <h2 class="content-h2" style="margin-top:0">Impact</h2>
+              <p class="content-p"><b>Exceeded adoption goals</b>, adjusted upsell settings to further improve the experience</p>
+            </div>
+            <div class="impact-grid" style="grid-template-columns:1fr 1.5fr;align-items:stretch;">
+              <div class="slide-img" style="height:100%;border-radius:16px;overflow:hidden"><img src="img_project/14/1.jpg" alt="Bulk replies tool" style="width:100%;height:100%;object-fit:cover" /></div>
+              <div style="background:var(--surface);border-radius:16px;padding:8px 32px 24px;display:flex;flex-direction:column;justify-content:center;">
+                <div style="display:grid;grid-template-columns:1.6fr 1fr 1fr;align-items:end;gap:16px;padding:16px 0 14px;border-bottom:1px solid var(--border);">
+                  <p style="font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:0.6px;text-transform:uppercase;color:var(--ink3);margin:0;">Measurement</p>
+                  <p style="font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:0.6px;text-transform:uppercase;color:var(--ink3);margin:0;text-align:right;">Goal/Benchmark</p>
+                  <p style="font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:0.6px;text-transform:uppercase;color:var(--ink2);margin:0;text-align:right;">Result</p>
+                </div>
+                <div style="display:grid;grid-template-columns:1.6fr 1fr 1fr;align-items:center;gap:16px;padding:16px 0;border-bottom:1px solid var(--border);">
+                  <p style="font-size:17px;color:var(--ink);margin:0;"><b>Adoption Rate</b></p>
+                  <p style="font-size:34px;font-weight:600;color:var(--ink3);margin:0;text-align:right;letter-spacing:-0.02em;">10%</p>
+                  <p style="font-size:34px;font-weight:600;color:var(--ink2);margin:0;text-align:right;letter-spacing:-0.02em;">27%</p>
+                </div>
+                <div style="display:grid;grid-template-columns:1.6fr 1fr 1fr;align-items:center;gap:16px;padding:16px 0;border-bottom:1px solid var(--border);">
+                  <p style="font-size:17px;color:var(--ink);margin:0;"><b>Ad Conversion Lift</b></p>
+                  <p style="font-size:34px;font-weight:600;color:var(--ink3);margin:0;text-align:right;letter-spacing:-0.02em;">9%</p>
+                  <p style="font-size:34px;font-weight:600;color:var(--ink2);margin:0;text-align:right;letter-spacing:-0.02em;">23%</p>
+                </div>
+                <div style="display:grid;grid-template-columns:1.6fr 1fr 1fr;align-items:center;gap:16px;padding:16px 0;">
+                  <p style="font-size:17px;color:var(--ink);margin:0;"><b>Dismiss Rate</b></p>
+                  <p style="font-size:34px;font-weight:600;color:var(--ink3);margin:0;text-align:right;letter-spacing:-0.02em;">12%</p>
+                  <p style="font-size:34px;font-weight:600;color:var(--ink2);margin:0;text-align:right;letter-spacing:-0.02em;">18%</p>
+                </div>
+                <p style="font-size:14px;line-height:1.4em;color:var(--ink2);margin:16px 0 0;padding-top:16px;border-top:1px solid var(--border);"><b>Learnings:</b> conversion of upsell use cases, click rate on ad dropdown/audience group label/send preview, patterns of audience selection and message editing</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="wrapup-learning" data-group="wrapup" data-nav="wrapup-learning">
+        <div class="panel-inner">
+          <div class="single-col">
+            <div>
+              <h2 class="content-h2" style="margin-top:0">Learning</h2>
+              <p class="content-p">AI accelerates design but <b>cannot replace</b> human judgment</p>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+              <div style="background:var(--surface);border-radius:16px;padding:28px 32px;">
+                <p style="font-size:18px;font-weight:600;color:var(--ink);margin-bottom:8px;">AI accelerates execution</p>
+                <p style="font-size:15px;color:var(--ink2);line-height:1.5;">Cut delivery from 3 months to 1 month by handling layout exploration, component generation, and prototyping.</p>
+              </div>
+              <div style="background:var(--surface);border-radius:16px;padding:28px 32px;">
+                <p style="font-size:18px;font-weight:600;color:var(--ink);margin-bottom:8px;">AI cannot find where to focus</p>
+                <p style="font-size:15px;color:var(--ink2);line-height:1.5;">Scoping and prioritization required business context and user understanding that AI lacked.</p>
+              </div>
+              <div style="background:var(--surface);border-radius:16px;padding:28px 32px;">
+                <p style="font-size:18px;font-weight:600;color:var(--ink);margin-bottom:8px;">AI cannot inform decisions</p>
+                <p style="font-size:15px;color:var(--ink2);line-height:1.5;">Trade-off reasoning, stakeholder alignment, and cross-team context needed human judgment.</p>
+              </div>
+              <div style="background:var(--surface);border-radius:16px;padding:28px 32px;">
+                <p style="font-size:18px;font-weight:600;color:var(--ink);margin-bottom:8px;">AI lacks ecosystem understanding</p>
+                <p style="font-size:15px;color:var(--ink2);line-height:1.5;">Meta's inbox required knowledge of competing tools, design system constraints, and platform dynamics.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="new-workflow" data-group="wrapup" data-nav="new-workflow">
+        <div class="panel-inner">
+          <div class="single-col" style="gap:16px;">
+            <div style="flex-shrink:0;">
+              <div style="display:flex;align-items:center;justify-content:space-between;">
+                <h2 class="content-h2" style="margin-top:0">New Workflow</h2>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;">
+                <p class="content-p" style="margin:0;">Use AI to build my interactive PRD ✨</p>
+                <a class="proto-link" href="inbox-ai-workflow.html#context-onepager" target="_blank"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9.3V13a1.3 1.3 0 0 1-1.3 1.3H3.3A1.3 1.3 0 0 1 2 13V5.6A1.3 1.3 0 0 1 3.3 4.3H7"/><path d="M10 2h4v4"/><path d="M6.7 9.3L14 2"/></svg>Demo</a>
+              </div>
+            </div>
+            <div style="flex:1;height:75vh;max-height:75vh;border:1px solid var(--border);border-radius:12px;position:relative;overflow:hidden;">
+              <iframe style="border:none;position:absolute;top:0;left:0;width:111.1%;height:111.1%;transform:scale(0.9);transform-origin:top left;" src="inbox-ai-workflow.html#context-onepager" allowfullscreen></iframe>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <script>
+    const main = document.getElementById('main');
+    const panels = document.querySelectorAll('.panel');
+    const parentNavItems = document.querySelectorAll('.side-section > .nav-item');
+    const allNavItems = document.querySelectorAll('.nav-item');
+    const navSubs = document.querySelectorAll('.nav-sub');
+
+
+    // ── Click nav item → scroll to panel ──
+    allNavItems.forEach(item => {
+      item.addEventListener('click', () => {
+        const target = item.dataset.target;
+        const el = document.getElementById(target);
+        if (el) {
+          const beh = el.classList.contains('no-snap') ? 'instant' : 'smooth';
+          main.scrollTo({ top: el.offsetTop, behavior: beh });
+        }
+      });
+    });
+
+
+    // ── Keyboard arrow keys ──
+    let keyCooldown = false;
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'r' || e.key === 'R') {
+        const el = document.getElementById('cover');
+        if (el) main.scrollTo({ top: el.offsetTop, behavior: 'smooth' });
+        return;
+      }
+      if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+      e.preventDefault();
+      if (keyCooldown) return;
+      keyCooldown = true;
+      setTimeout(() => keyCooldown = false, 400);
+
+      const mainRect = main.getBoundingClientRect();
+
+      // Check if a fixed-layer panel is active
+      const currentPanel = visiblePanels[currentVisiblePanelIdx];
+      if (currentPanel && fixedLayerPanels[currentPanel.id]) {
+        const fl = fixedLayerPanels[currentPanel.id];
+        if (e.key === 'ArrowDown' && fl.idx < fl.count - 1) {
+          setFixedLayer(currentPanel.id, fl.idx + 1);
+          return;
+        } else if (e.key === 'ArrowUp' && fl.idx > 0) {
+          setFixedLayer(currentPanel.id, fl.idx - 1);
+          return;
+        }
+      }
+
+      // Generic panel navigation
+      const idx = currentVisiblePanelIdx;
+      if (e.key === 'ArrowDown' && idx < visiblePanels.length - 1) {
+        const target = visiblePanels[idx + 1];
+        if (fixedLayerPanels[target.id]) setFixedLayer(target.id, 0);
+        const beh = target.classList.contains('no-snap') ? 'instant' : 'smooth';
+        main.scrollTo({ top: target.offsetTop, behavior: beh });
+      } else if (e.key === 'ArrowUp' && idx > 0) {
+        const target = visiblePanels[idx - 1];
+        const beh = target.classList.contains('no-snap') ? 'instant' : 'smooth';
+        main.scrollTo({ top: target.offsetTop, behavior: beh });
+      }
+    });
+
+    // ── Page counter ──
+    const pageCounter = document.getElementById('pageCounter');
+    const visiblePanels = Array.from(panels).filter(p => p.style.display !== 'none');
+    const totalPages = visiblePanels.length;
+
+    let currentVisiblePanelIdx = 0;
+    let activeGroup = 'overview';
+
+    function updatePageCounter() {
+      pageCounter.textContent = (currentVisiblePanelIdx + 1) + '/' + totalPages;
+    }
+
+    // ── Scroll spy ──
+    let scrollSpyReady = false;
+    setTimeout(() => { scrollSpyReady = true; }, 200);
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const panel = entry.target;
+          const id = panel.id;
+          const group = panel.dataset.group;
+
+          const prevIdx = currentVisiblePanelIdx;
+          const newIdx = visiblePanels.indexOf(panel);
+          activeGroup = group;
+          currentVisiblePanelIdx = newIdx;
+
+          // If entering a fixed-layer panel from below, show last layer
+          if (fixedLayerPanels[id] && prevIdx > newIdx) {
+            setFixedLayer(id, fixedLayerPanels[id].count - 1);
+          }
+          updatePageCounter();
+
+          // Update URL hash (skip during initial restore)
+          if (scrollSpyReady) {
+            const hashId = id;
+            if (location.hash !== '#' + hashId) {
+              history.replaceState(null, '', '#' + hashId);
+            }
+          }
+
+          // Highlight parent nav items
+          parentNavItems.forEach(n => {
+            const nTarget = n.dataset.target;
+            if (nTarget === 'cover') {
+              n.classList.toggle('active', nTarget === id);
+            } else if (nTarget === 'overview') {
+              n.classList.toggle('active', group === 'overview' && id !== 'cover');
+            } else {
+              const nPanel = document.getElementById(nTarget);
+              const nGroup = nPanel ? nPanel.dataset.group : null;
+              n.classList.toggle('active', nGroup === group);
+            }
+          });
+
+          // Show/hide sub-navs
+          navSubs.forEach(sub => {
+            const isActive = sub.dataset.parent === group;
+            if (isActive) {
+              sub.classList.add('open');
+              sub.style.maxHeight = sub.scrollHeight + 'px';
+            } else {
+              sub.classList.remove('open');
+              sub.style.maxHeight = '0';
+            }
+          });
+
+          // Highlight active sub-item
+          navSubs.forEach(sub => {
+            if (sub.dataset.parent === 'overview') {
+              if (group === 'overview') {
+                const activeTarget = id;
+                sub.querySelectorAll('.nav-item').forEach(si => {
+                  si.classList.toggle('active', si.dataset.target === activeTarget);
+                });
+              }
+            } else {
+              const navId = panel.dataset.nav || id;
+              sub.querySelectorAll('.nav-item').forEach(si => {
+                si.classList.toggle('active', si.dataset.target === navId);
+              });
+            }
+          });
+        }
+      });
+    }, {
+      root: main,
+      threshold: 0.5
+    });
+
+    panels.forEach(p => observer.observe(p));
+
+    // ── Close dropdown on outside click ──
+    document.addEventListener('click', e => {
+      const dd = document.getElementById('pageDropdown');
+      if (dd && !dd.contains(e.target)) dd.classList.remove('open');
+    });
+
+    // ── Tab switching ──
+    function switchFindingTab(tab, clickedBtn) {
+      const panel = document.getElementById('finding-1');
+      if (!panel) return;
+      panel.querySelectorAll('.fixed-layer:nth-child(2) .tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn === clickedBtn);
+      });
+      document.getElementById('finding-tab-ex1').style.display = (tab === 'ex1') ? 'flex' : 'none';
+      document.getElementById('finding-tab-ex2').style.display = (tab === 'ex2') ? 'flex' : 'none';
+    }
+
+    function switchTab(slide, tab, clickedBtn) {
+      const section = document.getElementById('context-' + slide) || document.getElementById(slide);
+      if (!section) return;
+      section.querySelectorAll('.tab-btn').forEach(btn => {
+        if (clickedBtn) {
+          btn.classList.toggle('active', btn === clickedBtn);
+        } else {
+          btn.classList.toggle('active', btn.textContent.toLowerCase().replace(/[\s-]/g, '').includes(tab));
+        }
+      });
+      section.querySelectorAll('.tab-content').forEach(tc => {
+        tc.classList.toggle('active', tc.id === 'tab-' + slide + '-' + tab);
+      });
+    }
+
+    function switchScopePill(btn, containerId, tab) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+      container.querySelectorAll('.scope-pill').forEach(p => {
+        p.classList.remove('active');
+        p.style.background = 'none';
+        p.style.border = '1px solid var(--border)';
+        p.style.color = 'var(--ink2)';
+        p.style.fontWeight = '500';
+      });
+      btn.classList.add('active');
+      btn.style.background = 'var(--accent)';
+      btn.style.border = '1px solid var(--accent)';
+      btn.style.color = '#fff';
+      btn.style.fontWeight = '600';
+      container.querySelectorAll('.tab-content').forEach(tc => {
+        tc.classList.toggle('active', tc.id === 'tab-' + containerId + '-' + tab);
+      });
+    }
+
+    // ── Feedback ──
+    function addFeedback(slideId) {
+      const input = document.getElementById('feedbackInput-' + slideId);
+      const list = document.getElementById('feedbackList-' + slideId);
+      const text = input.value.trim();
+      if (!text) return;
+
+      const item = document.createElement('div');
+      item.className = 'feedback-item';
+      item.innerHTML = `
+        <div class="feedback-avatar">G</div>
+        <div class="feedback-content">
+          <p class="feedback-author">Guest</p>
+          <p>${text}</p>
+        </div>
+      `;
+      list.prepend(item);
+      input.value = '';
+    }
+
+    // ── Restore position from URL hash on load ──
+    if (location.hash) {
+      main.style.visibility = 'hidden';
+      setTimeout(() => {
+        const hash = location.hash.slice(1);
+        if (hashToLayer[hash]) {
+          const { panelId, idx } = hashToLayer[hash];
+          const el = document.getElementById(panelId);
+          if (el) main.scrollTo({ top: el.offsetTop });
+          setFixedLayer(panelId, idx);
+        } else {
+          const el = document.getElementById(hash);
+          if (el) main.scrollTo({ top: el.offsetTop });
+        }
+        main.style.visibility = '';
+      }, 100);
+    }
+
+    // ── Divider page description fade-in ──
+    const dividerObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        } else {
+          entry.target.classList.remove('visible');
+        }
+      });
+    }, { root: main, threshold: 0.5 });
+    document.querySelectorAll('.divider-page').forEach(d => dividerObserver.observe(d));
+
+    // ── Overview panel fade-in ──
+    const fadeObs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('in-view');
+        } else {
+          e.target.classList.remove('in-view');
+        }
+      });
+    }, { root: main, threshold: 0.5 });
+    document.querySelectorAll('.panel-fade').forEach(p => fadeObs.observe(p));
+
+    // ── Fixed-layer panels (iteration) ──
+    const fixedLayerPanels = {};
+    document.querySelectorAll('[data-fixed-layers]').forEach(panel => {
+      const layers = panel.querySelectorAll('.fixed-layer');
+      fixedLayerPanels[panel.id] = { idx: 0, layers, count: layers.length };
+    });
+
+    const fixedLayerHashes = {
+      'finding-1': ['finding-1', 'finding-2'],
+      'mvp-entry-1': ['mvp-entry-1', 'mvp-entry-2'],
+    };
+    const hashToLayer = {};
+    Object.entries(fixedLayerHashes).forEach(([panelId, hashes]) => {
+      hashes.forEach((h, i) => { hashToLayer[h] = { panelId, idx: i }; });
+    });
+
+    function setFixedLayer(panelId, idx) {
+      const p = fixedLayerPanels[panelId];
+      if (!p) return;
+      p.idx = idx;
+      p.layers.forEach((el, i) => el.classList.toggle('active', i === idx));
+      const hashes = fixedLayerHashes[panelId];
+      if (hashes && hashes[idx]) {
+        history.replaceState(null, '', '#' + hashes[idx]);
+      }
+      updatePageCounter();
+    }
+
+    let fixedWheelCooldown = false;
+    document.querySelectorAll('[data-fixed-layers]').forEach(panel => {
+      panel.addEventListener('wheel', (e) => {
+        if (fixedWheelCooldown) return;
+        const rect = panel.getBoundingClientRect();
+        const mainRect = main.getBoundingClientRect();
+        const isVisible = rect.top >= mainRect.top - 10 && rect.top <= mainRect.top + 10;
+        if (!isVisible) return;
+        const fl = fixedLayerPanels[panel.id];
+        if (!fl) return;
+        if (e.deltaY > 0 && fl.idx < fl.count - 1) {
+          e.preventDefault();
+          fixedWheelCooldown = true;
+          setTimeout(() => fixedWheelCooldown = false, 600);
+          setFixedLayer(panel.id, fl.idx + 1);
+        } else if (e.deltaY < 0 && fl.idx > 0) {
+          e.preventDefault();
+          fixedWheelCooldown = true;
+          setTimeout(() => fixedWheelCooldown = false, 600);
+          setFixedLayer(panel.id, fl.idx - 1);
+        }
+      }, { passive: false });
+    });
+  </script>
+
+</body>
+</html>

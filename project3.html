@@ -1,0 +1,2657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="icon" type="image/png" href="../portfolio/projects/favicons/mu.png">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Onboarding Guide for WhatsApp Partner Platforms — Mu Jiun Shie</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Commissioner:wght@100..900&family=IBM+Plex+Mono:wght@400;500;600;700&display=block" rel="stylesheet" />
+  <link rel="stylesheet" href="shared.css" />
+  <style>
+    /* ── MAIN CONTENT ── */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      scroll-snap-type: y mandatory;
+    }
+
+    .project-title {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      padding: 32px 64px 0;
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 400;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: var(--ink2);
+      pointer-events: none;
+      height: 0;
+      overflow: visible;
+    }
+
+    .page-counter {
+      font-weight: 400;
+      letter-spacing: 0;
+      color: var(--ink2);
+    }
+
+    /* ── FIXED LAYER: reusable pattern for split panels where image stays fixed and text transitions ── */
+    .fixed-layer {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      opacity: 0;
+      -webkit-font-smoothing: antialiased;
+      backface-visibility: hidden;
+      transition: opacity 0.4s ease;
+      pointer-events: none;
+    }
+    .fixed-layer.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .challenge-img-layer {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      pointer-events: none;
+    }
+    .challenge-img-layer.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* ── PANEL: exactly one screen ── */
+    .panel {
+      height: 100vh;
+      scroll-snap-align: start;
+      padding: 32px 64px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .panel-inner {
+      width: 100%;
+      max-width: 1140px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      margin: 0 auto;
+    }
+
+    /* ── Overview panel fade-in ── */
+    .panel-fade .overview-left,
+    .panel-fade .single-col {
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1), transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .panel-fade.in-view .overview-left,
+    .panel-fade.in-view .single-col {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── OVERVIEW: 2-col layout ── */
+    .overview-header {
+      margin-bottom: 20px;
+    }
+
+    .overview-company {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+
+    .overview-title {
+      font-size: 48px;
+      font-weight: 700;
+      color: var(--ink);
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      margin-bottom: 16px;
+    }
+
+    .overview-subtitle {
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--ink2);
+      line-height: 1.5;
+    }
+
+    .overview-body {
+      display: grid;
+      grid-template-columns: 2fr 3fr;
+      gap: 40px;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .overview-left {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .overview-right {
+      display: flex;
+      align-items: center;
+    }
+
+    .overview-right .slide-img {
+      margin: 0;
+      height: 75%;
+    }
+
+    .overview-right .slide-img img {
+      object-fit: cover;
+    }
+
+    .overview-layer {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: none;
+    }
+
+    .overview-layer.active {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    /* Staggered children animation */
+    .overview-layer.active > *:nth-child(1) { transition-delay: 0s; }
+    .overview-layer.active > *:nth-child(2) { transition-delay: 0.05s; }
+
+    .overview-layer .meta-block {
+      padding: 16px 0;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .overview-layer.active .meta-block {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .overview-layer.active .meta-block:nth-child(1) { transition-delay: 0.1s; }
+    .overview-layer.active .meta-block:nth-child(2) { transition-delay: 0.2s; }
+    .overview-layer.active .meta-block:nth-child(3) { transition-delay: 0.3s; }
+
+
+    /* ── Highlight animation: starts as normal text, then bold + bg + thin underline ── */
+    .highlight {
+      font-weight: 400;
+      color: var(--ink);
+      text-decoration: underline;
+      text-decoration-color: transparent;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+      transition: font-weight 0.3s ease, color 0.3s ease, text-decoration-color 0.5s ease;
+    }
+
+    .overview-layer.active .highlight {
+      font-weight: 500;
+      color: var(--accent);
+      text-decoration-color: var(--accent);
+      transition-delay: 0.6s;
+    }
+
+    /* ── Checkmark list ── */
+    .check-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin: 6px 0 12px;
+    }
+
+    .check-list li {
+      font-size: 20px;
+      font-weight: 400;
+      color: var(--ink);
+      line-height: 1.4;
+      padding-left: 28px;
+      position: relative;
+    }
+
+    .check-icon {
+      position: absolute;
+      left: 0;
+      top: 6px;
+      width: 16px;
+      height: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .check-icon::after {
+      content: '';
+      width: 10px;
+      height: 5px;
+      border-left: 2px solid transparent;
+      border-bottom: 2px solid transparent;
+      transform: rotate(-45deg);
+      transition: border-color 0.3s ease;
+    }
+
+    .overview-layer.active .check-icon::after {
+      border-left-color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    .overview-layer.active li:nth-child(1) .check-icon { transition-delay: 0.2s; }
+    .overview-layer.active li:nth-child(1) .check-icon::after { transition-delay: 0.2s; }
+    .overview-layer.active li:nth-child(2) .check-icon { transition-delay: 0.35s; }
+    .overview-layer.active li:nth-child(2) .check-icon::after { transition-delay: 0.35s; }
+    .overview-layer.active li:nth-child(3) .check-icon { transition-delay: 0.5s; }
+    .overview-layer.active li:nth-child(3) .check-icon::after { transition-delay: 0.5s; }
+
+    /* ── Role timeline ── */
+    .role-timeline {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin: 8px 0;
+    }
+
+    .role-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0s, transform 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0s;
+    }
+
+    .overview-layer.active .role-item {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .role-icon {
+      font-size: 16px;
+      flex-shrink: 0;
+      width: 20px;
+      text-align: center;
+    }
+
+    .role-text {
+      font-size: 20px;
+      font-weight: 400;
+      color: var(--ink);
+      line-height: 1.35;
+    }
+
+    .role-group {
+      display: flex;
+      gap: 0;
+      padding-left: 9px;
+      list-style: none;
+    }
+
+    .role-line {
+      width: 2px;
+      background: var(--border);
+      flex-shrink: 0;
+      border-radius: 1px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .overview-layer.active .role-line {
+      opacity: 1;
+    }
+
+    .role-sub {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      padding-left: 10px;
+    }
+
+    .css-check {
+      position: relative;
+    }
+
+    .css-check::after {
+      content: '';
+      position: absolute;
+      left: 5px;
+      top: 2px;
+      width: 8px;
+      height: 4px;
+      border-left: 1.5px solid var(--ink3);
+      border-bottom: 1.5px solid var(--ink3);
+      transform: rotate(-45deg);
+      transition: border-color 0.3s ease;
+    }
+
+    .overview-layer.active .css-check::after {
+      border-left-color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    .overview-layer.active .role-indent .role-item:nth-child(1) .css-check::after { transition-delay: 0.2s; }
+    .overview-layer.active .role-indent .role-item:nth-child(2) .css-check::after { transition-delay: 0.3s; }
+    .overview-layer.active .role-indent .role-item:nth-child(3) .css-check::after { transition-delay: 0.4s; }
+
+    .role-sub .role-icon {
+      color: var(--ink2);
+      font-size: 14px;
+    }
+
+    .role-sub .role-text {
+      font-size: 16px;
+    }
+
+    /* Staggered entrance */
+    .overview-layer.active .role-timeline > .role-item:nth-child(1) { opacity: 1; transform: translateY(0); transition-delay: 0.1s; }
+    .role-divider {
+      width: 1.5px;
+      height: 0;
+      background: var(--ink3);
+      opacity: 0;
+      margin: 0 0 0 9px;
+      list-style: none;
+      transition: opacity 0.4s ease, height 0.4s ease, margin 0.4s ease;
+    }
+
+    .overview-layer.active .role-divider {
+      opacity: 0.3;
+      height: 16px;
+      margin: 2px 0 2px 9px;
+    }
+
+    .role-indent {
+      display: block;
+      padding-left: 0;
+      list-style: none;
+      opacity: 0;
+      max-height: 0;
+      overflow: visible;
+      transform: translateY(8px);
+      transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), max-height 0.5s ease;
+    }
+
+    .overview-layer.active .role-indent {
+      opacity: 1;
+      max-height: 200px;
+      transform: translateY(0);
+    }
+
+    .role-indent-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 10px 14px;
+      margin-left: -14px;
+    }
+
+    .role-indent-header {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--ink3);
+      margin-bottom: 4px;
+    }
+
+    .role-indent-list .role-item {
+      padding: 0;
+    }
+
+    .role-indent-list .role-text {
+      font-size: 16px;
+    }
+
+    .role-indent-list .role-icon {
+      font-size: 14px;
+    }
+
+    /* Staggered entrance: 6 main items show immediately */
+    .overview-layer.active .role-timeline > .role-item:nth-child(1) { transition-delay: 0.1s; }
+    .overview-layer.active .role-timeline > .role-item:nth-child(2) { transition-delay: 0.15s; }
+    .overview-layer.active .role-timeline > .role-item:nth-child(3) { transition-delay: 0.2s; }
+    .overview-layer.active .role-timeline > .role-item:nth-child(7) { transition-delay: 0.25s; }
+    .overview-layer.active .role-timeline > .role-item:nth-child(8) { transition-delay: 0.3s; }
+    .overview-layer.active .role-timeline > .role-item:nth-child(9) { transition-delay: 0.35s; }
+    /* 2s delay then dividers + box appear */
+    .overview-layer.active .role-timeline > .role-divider:nth-child(4) { transition-delay: 2.0s; }
+    .overview-layer.active .role-timeline > .role-divider:nth-child(6) { transition-delay: 2.0s; }
+    .overview-layer.active .role-timeline > .role-indent { transition-delay: 2.2s; }
+    /* Indent items stagger after box appears */
+    .overview-layer.active .role-indent .role-item:nth-child(1) { transition-delay: 2.4s; }
+    .overview-layer.active .role-indent .role-item:nth-child(2) { transition-delay: 2.6s; }
+    .overview-layer.active .role-indent .role-item:nth-child(3) { transition-delay: 2.8s; }
+
+    /* ── Stat numbers ── */
+    .stat-number {
+      font-size: 48px;
+      font-weight: 400;
+      color: var(--ink);
+      line-height: 1.1;
+      margin-bottom: 4px;
+      letter-spacing: -0.02em;
+      opacity: 0;
+      transform: translateY(8px) scale(0.95);
+      transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .overview-layer.active .stat-number {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .overview-layer.active .stat-card:nth-child(1) .stat-number { transition-delay: 0.15s; }
+    .overview-layer.active .stat-card:nth-child(2) .stat-number { transition-delay: 0.3s; }
+    .overview-layer.active .stat-card:nth-child(3) .stat-number { transition-delay: 0.45s; }
+
+    .stat-desc {
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--ink);
+      line-height: 1.4;
+    }
+
+    /* Impact grid */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .stat-card {
+      padding: 0;
+      background: transparent;
+      border-radius: var(--radius);
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .overview-layer.active .stat-card {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .overview-layer.active .stat-card:nth-child(1) { transition-delay: 0.15s; }
+    .overview-layer.active .stat-card:nth-child(2) { transition-delay: 0.25s; }
+    .overview-layer.active .stat-card:nth-child(3) { transition-delay: 0.35s; }
+
+    .stat-card .stat-number {
+      font-size: 56px;
+      margin-bottom: 6px;
+    }
+
+    .stat-card .stat-desc {
+      font-size: 16px;
+    }
+
+    /* ── CONTENT ELEMENTS ── */
+    .slide-img {
+      width: 100%;
+      background: var(--surface);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin: 16px 0;
+      display: flex;
+      align-items: center;
+    }
+
+    .slide-img img {
+      width: 100%;
+      display: block;
+      margin: 0 auto;
+    }
+
+    .slide-video {
+      height: 100%;
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-top: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .slide-video video {
+      height: 100%;
+      display: block;
+      border-radius: var(--radius);
+    }
+
+    .click-swap {
+      cursor: pointer;
+      position: relative;
+    }
+
+    .click-swap .swap-a,
+    .click-swap .swap-b {
+      transition: opacity 0.5s ease;
+    }
+
+    .click-swap .swap-b {
+      position: absolute;
+      top: 0;
+      left: 0;
+      opacity: 0;
+    }
+
+    .click-swap.swapped .swap-a { opacity: 0; }
+    .click-swap.swapped .swap-b { opacity: 1; }
+
+    /* ── Image Carousel ── */
+    .slide-carousel {
+      width: 100%;
+      position: relative;
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: var(--surface);
+      margin: 16px 0;
+    }
+
+    .slide-carousel .carousel-track {
+      position: relative;
+      width: 100%;
+    }
+
+    .slide-carousel .carousel-track img {
+      width: 100%;
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      opacity: 0;
+      transition: opacity 0.6s ease;
+    }
+
+    .slide-carousel .carousel-track img.active {
+      opacity: 1;
+      position: relative;
+    }
+
+    .carousel-dots {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 0;
+    }
+
+    .carousel-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--border);
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .carousel-dot.active {
+      background: var(--ink3);
+    }
+
+    /* ── Divider slide ── */
+    .divider-page {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+    }
+
+    .divider-title {
+      font-size: 48px;
+      font-weight: 700;
+      color: var(--ink);
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      margin-bottom: 12px;
+    }
+
+    .divider-desc {
+      font-size: 20px;
+      font-weight: 400;
+      color: var(--ink2);
+      line-height: 1.4;
+      letter-spacing: -0.01em;
+    }
+
+    .section-title {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+
+    .content-slidesection {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin: 24px 0 12px;
+    }
+
+    .content-slidesection:first-child { margin-top: 0; }
+
+    .content-title {
+      font-size: 24px;
+      font-weight: 400;
+      color: var(--ink);
+      line-height: 1.35;
+      max-width: 720px;
+    }
+
+    .content-subtitle {
+      font-size: 17px;
+      font-weight: 400;
+      color: var(--ink3);
+      line-height: 1.4;
+      padding-top: 4px;
+      letter-spacing: 0.01em;
+    }
+
+    .content-subtitle b {
+      font-weight: 600;
+    }
+
+    .single-col .content-subtitle,
+    .context-layer .content-subtitle {
+      padding-top: 4px;
+    }
+
+    .split-text .content-subtitle {
+      padding-top: 10px;
+    }
+
+    .content-title em {
+      font-style: italic;
+      color: var(--ink3);
+      font-size: 13px;
+    }
+
+    .content-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin: 6px 0 12px;
+    }
+
+    .content-list li {
+      font-size: 20px;
+      font-weight: 400;
+      color: var(--ink);
+      line-height: 1.4;
+      padding-left: 24px;
+      position: relative;
+    }
+
+    .content-list li::before {
+      content: '\2192';
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+    }
+
+    .meta-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      margin: 16px 0;
+    }
+
+    .meta-block-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+
+    /* ── TABLE ── */
+    .compare-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin: 12px 0;
+      font-size: 15px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .compare-table th,
+    .compare-table td {
+      text-align: left;
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    .compare-table tr:last-child td { border-bottom: none; }
+
+    .compare-table th {
+      font-weight: 600;
+      color: var(--ink);
+      background: var(--surface);
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .compare-table td { color: var(--ink); line-height: 1.5; }
+
+    .compare-table tbody tr:hover { background: rgba(0,0,0,0.015); }
+
+    .compare-table .check { color: var(--accent); font-weight: 600; }
+
+    /* ── INSIGHT LIST ── */
+    .insight-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin: 8px 0;
+      max-width: 720px;
+    }
+
+    .insight-list li {
+      font-size: 15px;
+      color: var(--ink);
+      line-height: 1.6;
+      padding-left: 18px;
+      position: relative;
+    }
+
+    .insight-list li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 10px;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    .insight-list li strong { font-weight: 600; }
+
+    /* ── 2-COL PANEL LAYOUT ── */
+    .split {
+      display: grid;
+      grid-template-columns: 2fr 3fr;
+      gap: 40px;
+      height: 100%;
+      align-items: center;
+    }
+
+    .split-text { display: flex; flex-direction: column; justify-content: center; }
+
+    /* ── Focus list (stepped 2-col) ── */
+    .focus-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 22px; }
+    .focus-item .fi-title {
+      font-weight: 400;
+      font-size: clamp(18px, 1.6vw, 28px);
+      color: var(--ink);
+      line-height: 1.35;
+      opacity: 0.28;
+      margin: 0;
+      transition: opacity 0.4s ease, font-weight 0.4s ease;
+    }
+    .focus-item .fi-sub {
+      font-size: clamp(14px, 1.1vw, 20px);
+      color: var(--ink2);
+      line-height: 1.35;
+      margin: 0;
+      max-height: 0;
+      opacity: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease, opacity 0.4s ease, margin 0.4s ease;
+    }
+    .focus-item.active .fi-title { opacity: 1; font-weight: 700; }
+    .focus-item.active .fi-sub { margin: 8px 0 0; max-height: 140px; opacity: 1; }
+
+    /* ── 1-col layout ── */
+    .single-col {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      justify-content: center;
+      gap: 24px;
+      padding-top: 48px;
+    }
+
+    /* ── Funnel Diagram ── */
+    .funnel-diagram {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+    }
+
+    .funnel-step {
+      background: var(--ink2);
+      color: #fff;
+      font-size: 16px;
+      font-weight: 500;
+      text-align: center;
+      padding: 14px 48px;
+      border-radius: 10px;
+      width: 320px;
+    }
+
+    .funnel-step.clickable {
+      cursor: pointer;
+      transition: background 0.5s ease, opacity 0.2s ease;
+    }
+
+    .funnel-step.clickable:hover {
+      opacity: 0.85;
+    }
+
+    .funnel-step.accent {
+      background: var(--accent);
+    }
+
+    .funnel-arrow {
+      color: var(--ink2);
+      font-size: 20px;
+      padding: 8px 0;
+      line-height: 1;
+      transition: color 0.5s ease;
+    }
+
+    .funnel-arrow.accent {
+      color: var(--accent);
+    }
+
+    .funnel-group {
+      background: rgba(0,0,0,0.04);
+      border-radius: 16px;
+      padding: 16px;
+      width: 320px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 0;
+      opacity: 0;
+      max-height: 0;
+      overflow: hidden;
+      padding-top: 0;
+      padding-bottom: 0;
+      transition: opacity 0.5s ease, max-height 0.6s cubic-bezier(0.16, 1, 0.3, 1), padding 0.5s ease, margin 0.5s ease;
+    }
+
+    .funnel-card {
+      background: var(--bg);
+      border-radius: 10px;
+      padding: 14px 20px;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--ink);
+      text-align: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Funnel group reveal on click */
+    .funnel-diagram.open .funnel-group {
+      opacity: 1;
+      max-height: 300px;
+      padding: 16px;
+      margin-top: 8px;
+    }
+
+    .funnel-diagram.open .funnel-group .funnel-card:nth-child(1) { opacity: 1; transform: translateY(0); transition-delay: 0.2s; }
+    .funnel-diagram.open .funnel-group .funnel-card:nth-child(2) { opacity: 1; transform: translateY(0); transition-delay: 0.35s; }
+    .funnel-diagram.open .funnel-group .funnel-card:nth-child(3) { opacity: 1; transform: translateY(0); transition-delay: 0.5s; }
+    .funnel-diagram.open .funnel-group .funnel-card:nth-child(4) { opacity: 1; transform: translateY(0); transition-delay: 0.65s; }
+    .funnel-diagram.open .funnel-group .funnel-card:nth-child(5) { opacity: 1; transform: translateY(0); transition-delay: 0.8s; }
+
+
+    /* Goals diagram: independent group toggles */
+    #goalsGroupOnboard.open,
+    #goalsGroupActivate.open,
+    #pathGroupOnboard.open,
+    #pathGroupActivate.open {
+      opacity: 1;
+      max-height: 300px;
+      padding: 16px;
+      margin-top: 8px;
+    }
+
+    #goalsGroupOnboard.open .funnel-card:nth-child(1),
+    #goalsGroupActivate.open .funnel-card:nth-child(1),
+    #pathGroupOnboard.open .funnel-card:nth-child(1),
+    #pathGroupActivate.open .funnel-card:nth-child(1) { opacity: 1; transform: translateY(0); transition-delay: 0.2s; }
+    #goalsGroupOnboard.open .funnel-card:nth-child(2),
+    #goalsGroupActivate.open .funnel-card:nth-child(2),
+    #pathGroupOnboard.open .funnel-card:nth-child(2),
+    #pathGroupActivate.open .funnel-card:nth-child(2) { opacity: 1; transform: translateY(0); transition-delay: 0.35s; }
+    #goalsGroupOnboard.open .funnel-card:nth-child(3),
+    #goalsGroupActivate.open .funnel-card:nth-child(3),
+    #pathGroupOnboard.open .funnel-card:nth-child(3),
+    #pathGroupActivate.open .funnel-card:nth-child(3) { opacity: 1; transform: translateY(0); transition-delay: 0.5s; }
+    #goalsGroupOnboard.open .funnel-card:nth-child(4),
+    #goalsGroupActivate.open .funnel-card:nth-child(4),
+    #pathGroupOnboard.open .funnel-card:nth-child(4),
+    #pathGroupActivate.open .funnel-card:nth-child(4) { opacity: 1; transform: translateY(0); transition-delay: 0.65s; }
+
+    /* ── Findings Diagram (slide 14) ── */
+    .findings-diagram {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 320px;
+      transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .findings-diagram .funnel-step {
+      width: 320px;
+      transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .findings-diagram .funnel-group {
+      width: 320px;
+      cursor: pointer;
+      padding: 0;
+      margin: 0;
+      gap: 0;
+      background: transparent;
+      border-radius: 0;
+      transition: width 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.4s ease, max-height 0.6s ease, padding 0.5s ease, margin 0.5s ease, gap 0.5s ease, background 0.3s ease;
+    }
+
+    .findings-diagram .funnel-group:hover { opacity: 0.95; }
+
+    /* f-item: grid row with label + tasks */
+    .findings-diagram .f-item {
+      display: grid;
+      grid-template-columns: 288px;
+      gap: 0;
+      align-items: stretch;
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .findings-diagram .f-arrow {
+      color: var(--ink2);
+      font-size: 18px;
+      text-align: center;
+      padding: 4px 0;
+      line-height: 1;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    /* Step 1: auto-animate group items in progressively */
+    /* Children order: f-item(1), f-arrow(2), f-item(3), f-arrow(4), f-item(5) */
+    .findings-diagram.step1 .funnel-group { opacity: 1; max-height: 600px; padding: 16px; margin-top: 8px; gap: 10px; background: rgba(0,0,0,0.04); border-radius: 16px; }
+    .findings-diagram.step1 .funnel-group > :nth-child(1) { opacity: 1; transform: translateY(0); transition-delay: 0.2s; }
+    .findings-diagram.step1 .funnel-group > :nth-child(2) { opacity: 1; transition-delay: 0.5s; }
+    .findings-diagram.step1 .funnel-group > :nth-child(3) { opacity: 1; transform: translateY(0); transition-delay: 0.7s; }
+    .findings-diagram.step1 .funnel-group > :nth-child(4) { opacity: 1; transition-delay: 1.0s; }
+    .findings-diagram.step1 .funnel-group > :nth-child(5) { opacity: 1; transform: translateY(0); transition-delay: 1.2s; }
+
+    /* Step 2: widen and show tasks next to group items */
+    .findings-diagram.step2 { width: auto; }
+    .findings-diagram.step2 .funnel-step { width: 100%; }
+    .findings-diagram.step2 .funnel-group { width: auto; }
+    .findings-diagram.step2 .f-item,
+    .findings-diagram.step2 .f-arrow { opacity: 1; transform: none; transition-delay: 0s; }
+
+    .findings-diagram.step2 .f-item {
+      grid-template-columns: 288px 1fr;
+      gap: 8px;
+    }
+
+    .f-item-label {
+      background: var(--bg);
+      border-radius: 10px;
+      padding: 14px 20px;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--ink);
+      text-align: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 288px;
+      min-height: 48px;
+      transition: min-height 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    /* item 1: 3 tasks, item 3: 2 tasks, item 5: 1 task */
+    .findings-diagram.step2 .funnel-group > :nth-child(1) .f-item-label { min-height: 120px; }
+    .findings-diagram.step2 .funnel-group > :nth-child(3) .f-item-label { min-height: 82px; }
+    .findings-diagram.step2 .funnel-group > :nth-child(5) .f-item-label { min-height: 48px; }
+
+    .f-item-tasks {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      justify-content: center;
+      max-height: 0;
+      max-width: 0;
+      opacity: 0;
+      overflow: hidden;
+      transition: max-height 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), max-width 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.4s ease 0.2s;
+    }
+
+    .findings-diagram.step2 .f-item-tasks {
+      max-height: 200px;
+      max-width: 200px;
+      opacity: 1;
+    }
+
+    .f-task {
+      background: var(--bg);
+      color: var(--ink2);
+      font-size: 13px;
+      font-weight: 500;
+      text-align: center;
+      padding: 10px 12px;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      white-space: nowrap;
+    }
+
+    .findings-diagram.step2 .funnel-group > :nth-child(5) .f-task { flex: 1; display: flex; align-items: center; justify-content: center; }
+
+    .single-col .content-title {
+      max-width: none;
+    }
+
+    .single-col .slide-img {
+      margin: 0;
+      height: 60%;
+      min-height: 0;
+      flex: none;
+    }
+    .single-col .findings-row {
+      height: 60%;
+      flex: none;
+    }
+    .single-col .findings-row .slide-img {
+      height: 100%;
+      flex: 1;
+    }
+
+    .single-col .slide-img img {
+      width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    /* ── Dissolve crossfade for clarify-path panel ── */
+    .dissolve-text {
+      position: relative;
+    }
+    .dissolve-text .fixed-layer {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .dissolve-text .fixed-layer:first-child {
+      position: relative;
+    }
+    .dissolve-img-stack {
+      position: relative;
+      width: 100%;
+      background: var(--surface);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .dissolve-img-stack img {
+      width: 100%;
+      display: block;
+      transition: opacity 0.6s ease;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      opacity: 0;
+    }
+    .dissolve-img-stack img:first-child {
+      position: relative;
+      top: auto;
+      left: auto;
+      transform: none;
+      opacity: 1;
+    }
+    .dissolve-img-stack[data-active-img="1"] img { opacity: 0; }
+    .dissolve-img-stack[data-active-img="1"] img:nth-child(2) { opacity: 1; }
+    .dissolve-img-stack[data-active-img="2"] img { opacity: 0; }
+    .dissolve-img-stack[data-active-img="2"] img:nth-child(3) { opacity: 1; }
+    .dissolve-img-stack:not([data-active-img]) img:first-child,
+    .dissolve-img-stack[data-active-img="0"] img:first-child { opacity: 1; }
+    .dissolve-img-stack:not([data-active-img]) img:not(:first-child),
+    .dissolve-img-stack[data-active-img="0"] img:not(:first-child) { opacity: 0; }
+
+    /* ── Context layers (messaging/partners toggle) ── */
+    .context-layer-wrap {
+      display: grid;
+    }
+    .context-layer {
+      grid-area: 1 / 1;
+      align-self: end;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .context-layer.active {
+      opacity: 1;
+    }
+
+    /* ── Impact Grid (slide 27) ── */
+    .impact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      width: 100%;
+    }
+
+    .impact-stats {
+      background: var(--surface);
+      border-radius: 16px;
+      padding: 32px;
+      border: none;
+      display: grid;
+      grid-template-columns: auto auto;
+      gap: 12px 40px;
+      justify-content: start;
+      align-content: center;
+    }
+
+    .impact-number {
+      font-size: 55px;
+      font-weight: 400;
+      color: var(--ink);
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+    }
+
+    .impact-label {
+      font-size: 14px;
+      color: var(--ink2);
+      margin-top: 6px;
+    }
+
+    .impact-quotes {
+      background: var(--surface);
+      border-radius: 16px;
+      padding: 28px 32px;
+      border: none;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 24px;
+    }
+
+    .impact-quote + .impact-quote {
+      border-top: 1px solid var(--border);
+      padding-top: 24px;
+    }
+
+    .quote-text {
+      font-size: 17px;
+      color: var(--ink);
+      line-height: 1.3;
+    }
+
+    .quote-author {
+      font-size: 14px;
+      color: var(--ink2);
+      margin-top: 6px;
+    }
+
+    /* ── Wireframe Compare (hub vs linear) ── */
+    .wireframe-compare {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      width: 100%;
+      padding: 20px;
+    }
+
+    .wireframe-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .wireframe-label {
+      font-size: 16px;
+      font-weight: 400;
+      color: var(--ink);
+      margin-top: 12px;
+      letter-spacing: -0.01em;
+      text-align: center;
+    }
+
+    .wireframe-arrow {
+      font-size: 24px;
+      color: var(--ink);
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    /* Browser wireframe */
+    .wf-browser {
+      border: 1.5px solid rgba(0,0,0,0.15);
+      border-radius: 8px;
+      overflow: hidden;
+      background: var(--bg);
+      width: 100%;
+    }
+
+    .wf-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 8px 10px;
+      background: var(--surface);
+      border-bottom: 1.5px solid rgba(0,0,0,0.15);
+    }
+
+    .wf-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.3);
+    }
+
+    .wf-url {
+      height: 10px;
+      flex: 1;
+      background: var(--bg);
+      border-radius: 4px;
+      margin-left: 6px;
+    }
+
+    .wf-body {
+      display: flex;
+      height: 220px;
+    }
+
+    .wf-sidebar {
+      width: 48px;
+      padding: 10px 8px;
+      border-right: 1.5px solid rgba(0,0,0,0.15);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .wf-sb-line {
+      height: 4px;
+      background: rgba(0,0,0,0.22);
+      border-radius: 2px;
+    }
+
+    .wf-content {
+      flex: 1;
+      padding: 14px;
+    }
+
+    .wf-line {
+      height: 5px;
+      background: rgba(0,0,0,0.25);
+      border-radius: 2px;
+      margin-bottom: 4px;
+    }
+
+    .w30 { width: 30%; } .w40 { width: 40%; } .w45 { width: 45%; }
+    .w50 { width: 50%; } .w55 { width: 55%; } .w60 { width: 60%; }
+    .w65 { width: 65%; } .w70 { width: 70%; }
+
+    /* Hub cards */
+    .wf-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .wf-card {
+      border: 1.5px solid rgba(0,0,0,0.15);
+      border-radius: 6px;
+      padding: 10px 6px 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .wf-card-icon {
+      width: 20px;
+      height: 20px;
+      background: rgba(0,0,0,0.15);
+      border-radius: 4px;
+    }
+
+    .wf-card .wf-line { width: 80%; margin: 0; }
+
+    /* Linear tasks */
+    .wf-progress {
+      height: 3px;
+      background: var(--surface);
+      border-radius: 2px;
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+
+    .wf-progress-fill {
+      width: 16%;
+      height: 100%;
+      background: #1B9C42;
+      border-radius: 2px;
+    }
+
+    .wf-tasks {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .wf-task {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 0;
+      border-top: 1px solid var(--border2);
+    }
+
+    .wf-circle {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 2px solid rgba(0,0,0,0.25);
+      flex-shrink: 0;
+    }
+
+    .wf-circle.done {
+      background: #1B9C42;
+      border-color: #1B9C42;
+    }
+
+    .wf-task .wf-line { margin: 0; }
+
+    .split-img { display: flex; align-items: center; height: 75%; }
+
+    .split-img .slide-img {
+      margin: 0;
+      height: 100%;
+    }
+
+    .split-img .slide-img img {
+      object-fit: contain;
+    }
+
+    .split-img .slide-carousel {
+      margin: 0;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .split-img .slide-carousel .carousel-track {
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .split-img .slide-carousel .carousel-track img {
+      object-fit: contain;
+    }
+
+    .split-img .slide-carousel .carousel-track img.active {
+      position: relative;
+    }
+
+    /* ── TABS ── */
+    .tab-card {
+      background: var(--surface);
+      border-radius: 12px;
+      overflow: hidden;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      max-height: 90vh;
+    }
+
+    .tab-bar {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tab-bar .tab-btn {
+      padding: 12px 24px;
+      font-family: var(--font);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--ink2);
+      background: none;
+      border: none;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+    }
+
+    .tab-bar .tab-btn.active {
+      color: var(--accent);
+      font-weight: 600;
+      border-bottom-color: var(--accent);
+    }
+
+    .tab-bar .tab-btn:hover {
+      color: var(--ink);
+    }
+
+    .tab-content {
+      display: none;
+      flex: 1;
+      padding: 24px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .tab-content.active {
+      display: flex;
+    }
+
+    .tab-content img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    /* ── Clarify Problems section ── */
+    .lens-row {
+      display: flex;
+      gap: 12px;
+      align-items: stretch;
+      margin-top: 20px;
+    }
+    .lens-card {
+      flex: 1;
+      min-width: 0;
+      padding: 30px 22px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      display: flex;
+      flex-direction: column;
+    }
+    .lens-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--accent);
+      margin: 0;
+      line-height: 1;
+    }
+    .lens-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--ink);
+      margin: 6px 0 4px;
+      line-height: 1.25;
+    }
+    .lens-desc {
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--ink);
+      margin: 0;
+    }
+    .xfn-note {
+      padding: 30px 22px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      display: flex;
+      flex-direction: column;
+    }
+    .xfn-note .lens-label { color: var(--accent); }
+    .findings-row {
+      display: flex;
+      gap: 12px;
+      align-items: stretch;
+    }
+    .finding-card {
+      flex: 1;
+      min-width: 0;
+      padding: 30px 26px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .finding-card .label {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--ink3);
+      margin: 0;
+    }
+    .finding-card .title {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--ink);
+      margin: 0;
+    }
+    .finding-card .tag {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--accent);
+      background: var(--accent-light);
+      padding: 4px 8px;
+      border-radius: 4px;
+      margin-top: 4px;
+      align-self: flex-start;
+    }
+    .compare-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 4px;
+    }
+    .compare-col {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .compare-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin: 0;
+    }
+    .compare-col.before .compare-label { color: var(--ink3); }
+    .compare-col.after .compare-label { color: var(--accent); }
+    .compare-headline {
+      font-size: 16px;
+      line-height: 1.4;
+      color: var(--ink);
+      margin: 0;
+    }
+    .compare-visual {
+      height: 40vh;
+      background: var(--surface);
+      border-radius: var(--radius);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .compare-visual img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .journey-diagram {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 6px;
+      width: 100%;
+    }
+    .journey-head {
+      background: var(--ink2);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      text-align: center;
+      padding: 10px 16px;
+      border-radius: 8px;
+      margin-bottom: 4px;
+    }
+    .journey-row {
+      display: grid;
+      grid-template-columns: 1fr 1.1fr;
+      gap: 6px;
+      align-items: stretch;
+    }
+    .journey-step {
+      background: #fff;
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      line-height: 1.3;
+    }
+    .journey-tasks {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      justify-content: center;
+    }
+    .journey-task {
+      background: #fff;
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--ink2);
+      text-align: center;
+    }
+    .journey-arrow {
+      color: var(--accent);
+      font-size: 14px;
+      text-align: center;
+      padding: 0;
+      line-height: 1;
+    }
+
+    .challenge-expand {
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition: max-height 0.4s ease, opacity 0.3s ease;
+    }
+    .challenge-expand.show {
+      max-height: 300px;
+      opacity: 1;
+      margin-top: 8px;
+    }
+
+
+  </style>
+</head>
+<body>
+
+  <div class="shell">
+
+    <!-- ── LEFT NAV ── -->
+    <nav class="side">
+      <div class="side-section" style="margin-bottom: 20px;">
+        <p class="side-label">Page</p>
+        <div class="dropdown" id="pageDropdown">
+          <div class="dropdown-toggle" onclick="this.parentElement.classList.toggle('open')">Project 3</div>
+          <div class="dropdown-menu">
+            <a class="dropdown-option" href="intro.html#s-17">Intro</a>
+            <a class="dropdown-option" href="project1.html">Project 1</a>
+            <a class="dropdown-option" href="project2.html">Project 2</a>
+            <a class="dropdown-option current" href="project3.html">Project 3</a>
+          </div>
+        </div>
+      </div>
+      <div class="side-section">
+        <p class="side-label">Agenda</p>
+
+        <a class="nav-item active" data-target="cover">Cover</a>
+        <a class="nav-item" data-target="overview">Overview</a>
+
+        <a class="nav-item" data-target="context-divider">Context</a>
+        <div class="nav-sub" data-parent="context">
+          <a class="nav-item" data-target="context">Template Tool</a>
+          <a class="nav-item" data-target="problem">Problem</a>
+          <a class="nav-item" data-target="solution">Solution</a>
+        </div>
+
+        <a class="nav-item" data-target="shape-divider">Shape System</a>
+        <div class="nav-sub" data-parent="shape">
+          <a class="nav-item" data-target="framework">Page Framework</a>
+          <a class="nav-item" data-target="task">Task Sequence</a>
+          <a class="nav-item" data-target="component-1a">Components</a>
+        </div>
+
+        <a class="nav-item" data-target="launch-divider">Final Delivery</a>
+        <div class="nav-sub" data-parent="launch">
+          <a class="nav-item" data-target="principles">Design Principles</a>
+          <a class="nav-item" data-target="patterns">Shared Patterns</a>
+          <a class="nav-item" data-target="share-out">Share-Out & OH</a>
+        </div>
+
+        <a class="nav-item" data-target="impact-divider">Impact & Scale</a>
+        <div class="nav-sub" data-parent="impact">
+          <a class="nav-item" data-target="impact-goals">Impact</a>
+          <a class="nav-item" data-target="scale-structure">Scale</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- ── MAIN CONTENT ── -->
+    <!-- Example Modal -->
+    <div id="example-modal" style="display:none;position:fixed;z-index:999;align-items:center;justify-content:center;background:var(--bg)" onclick="if(event.target===this)this.style.display='none'">
+      <div style="position:relative;width:90%;max-height:90%;display:flex;flex-direction:column;gap:16px">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <p style="font-family:var(--font);font-size:14px;font-weight:500;color:var(--ink2);margin:0">Partner platform examples</p>
+          <button onclick="document.getElementById('example-modal').style.display='none'" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--ink2)">✕</button>
+        </div>
+        <div style="position:relative;overflow:hidden;border-radius:8px">
+          <div id="example-track" style="display:flex;transition:transform 0.4s ease">
+            <img src="img_project/10/example1.png" style="min-width:100%;height:auto" />
+            <img src="img_project/10/example2.png" style="min-width:100%;height:auto" />
+            <img src="img_project/10/example3.png" style="min-width:100%;height:auto" />
+          </div>
+        </div>
+        <div style="display:flex;justify-content:center;gap:8px">
+          <button class="example-dot" onclick="goExampleSlide(0)" style="width:8px;height:8px;border-radius:50%;border:none;cursor:pointer;padding:0"></button>
+          <button class="example-dot" onclick="goExampleSlide(1)" style="width:8px;height:8px;border-radius:50%;border:none;cursor:pointer;padding:0"></button>
+          <button class="example-dot" onclick="goExampleSlide(2)" style="width:8px;height:8px;border-radius:50%;border:none;cursor:pointer;padding:0"></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="main" id="main">
+
+      <p class="project-title"><span class="page-counter" id="pageCounter">1/22</span> • Design System</p>
+
+      <!-- ═══ COVER ═══ -->
+      <section class="panel panel-fade" id="cover" data-group="overview">
+        <div class="panel-inner">
+          <div class="overview-body">
+            <div class="overview-left">
+              <div class="overview-header">
+                <p class="overview-company">Design System</p>
+                <h1 class="overview-title">Built Design System for WhatsApp Message Builder</h1>
+                <p class="overview-subtitle">Product Lead (PD + PM Role) + 1 Eng<br>Timeline: 2 Months (Launched in Dec 2024)</p>
+              </div>
+            </div>
+            <div class="overview-right">
+              <div class="slide-img"><img src="img_project/11/1.jpg" alt="Overview" /></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ OVERVIEW ═══ -->
+      <section class="panel panel-fade" id="overview" data-group="overview">
+        <div class="panel-inner">
+          <div class="overview-body">
+            <div class="overview-left">
+              <div class="meta-block" style="margin-bottom:24px;">
+                <p class="meta-block-label">Overview</p>
+                <p class="content-title" style="font-size:20px">Built a <b>design system</b> for WhatsApp message builder with 7 offers to drive <b>consistency</b>, <b>usability</b>, and future <b>scale</b></p>
+              </div>
+              <div class="meta-block" style="margin-bottom:24px;">
+                <p class="meta-block-label">Deliverables</p>
+                <p class="content-title" style="font-size:20px;margin:8px 0 0;">One page framework, 9 components, documentation</p>
+              </div>
+              <div class="meta-block">
+                <p class="meta-block-label">Impact</p>
+                <p class="content-title" style="font-size:20px;margin:8px 0 0;"><b>1.6x</b> completion rate, <b>75%</b> lower scaling costs</p>
+              </div>
+            </div>
+            <div class="overview-right">
+              <div class="slide-img"><img src="img_project/11/1.jpg" alt="Overview" /></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ CONTEXT ═══ -->
+      <section class="panel" id="context-divider" data-group="context">
+        <div class="panel-inner divider-page">
+          <p class="divider-title">Context</p>
+          <p class="divider-desc">Why this matters</p>
+        </div>
+      </section>
+
+      <section class="panel panel-fade" id="context" data-group="context">
+        <div class="panel-inner">
+          <div class="single-col">
+            <div>
+              <h2 class="content-slidesection" style="margin-top:0">Tool</h2>
+              <p class="content-title">Enterprises <b>create broadcast messages</b> with the WhatsApp message builder</p>
+            </div>
+            <img src="img_project/11/2.jpg" alt="WhatsApp message builder" style="width:100%;border-radius:8px" />
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="problem" data-group="context">
+        <div class="panel-inner">
+          <div class="single-col">
+            <div>
+              <h2 class="content-slidesection" style="margin-top:0">Problems</h2>
+              <p class="content-title">The tool had <b>many issues</b>, leading to a low submission rate and high scaling costs</p>
+            </div>
+            <img src="img_project/11/3.jpg" alt="Inconsistent experience" style="width:100%;border-radius:8px" />
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="solution" data-group="context">
+        <div class="panel-inner">
+          <div class="single-col">
+            <div>
+              <h2 class="content-slidesection" style="margin-top:0">Solution</h2>
+              <p class="content-title">Built a <b>design system</b> for <b>consistency, usability, and future scaling</b></p>
+            </div>
+            <img src="img_project/11/4.jpg" alt="Design system" style="width:100%;border-radius:8px" />
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ SHAPE CONCEPTS ═══ -->
+      <section class="panel" id="shape-divider" data-group="shape">
+        <div class="panel-inner divider-page">
+          <p class="divider-title">Shape System</p>
+          <p class="divider-desc">How I built a scalable system for current and future needs</p>
+        </div>
+      </section>
+
+      <section class="panel" id="framework" data-group="shape" data-nav="framework" data-fixed-layers="3">
+        <div class="panel-inner" style="position:relative">
+          <div class="fixed-layer active" data-layer="0">
+            <div class="split" style="height:100%">
+              <div class="split-text">
+                <div>
+                  <h2 class="content-slidesection" style="margin-top:0">Page Framework</h2>
+                  <p class="content-title">Adopted a <b>card-based layout</b> to make the page framework scalable and clearer in hierarchy</p>
+                </div>
+              </div>
+              <div class="split-img">
+                <img src="img_project/11/5.jpg" alt="Layout pattern" style="width:100%;border-radius:8px" />
+              </div>
+            </div>
+          </div>
+          <div class="fixed-layer" data-layer="1">
+            <div class="split" style="height:100%">
+              <div class="split-text">
+                <div>
+                  <h2 class="content-slidesection" style="margin-top:0">Task Sequence</h2>
+                  <p class="content-title">Turned 12 requirements into <b>7 cards with a defined sequence</b> to make configuration predictable</p>
+                </div>
+              </div>
+              <div class="split-img">
+                <img src="img_project/11/6.jpg" alt="Modular cards + sequence" style="width:100%;border-radius:8px" />
+              </div>
+            </div>
+          </div>
+          <div class="fixed-layer" data-layer="2">
+            <div class="split" style="height:100%">
+              <div class="split-text">
+                <div>
+                  <h2 class="content-slidesection" style="margin-top:0">Components</h2>
+                  <p class="content-title">Redesigned <b>7 cards</b>, balancing different configuration needs, usability, and system consistency</p>
+                  <div style="margin-top:20px;display:flex;flex-direction:column;gap:2px;">
+                    <div style="display:flex;gap:16px;align-items:baseline;"><span style="flex:0 0 48px;color:var(--accent);font-weight:600;font-size:15px;">1 • 7</span><span class="content-subtitle" style="margin:0;">Scaled across different tools</span></div>
+                    <div style="display:flex;gap:16px;align-items:baseline;"><span style="flex:0 0 48px;color:var(--accent);font-weight:600;font-size:15px;">2</span><span class="content-subtitle" style="margin:0;">Moved placement to ease configuration</span></div>
+                    <div style="display:flex;gap:16px;align-items:baseline;"><span style="flex:0 0 48px;color:var(--accent);font-weight:600;font-size:15px;">3</span><span class="content-subtitle" style="margin:0;">Customized for certain needs</span></div>
+                    <div style="display:flex;gap:16px;align-items:baseline;"><span style="flex:0 0 48px;color:var(--accent);font-weight:600;font-size:15px;">4 • 5</span><span class="content-subtitle" style="margin:0;">Scaled for both current and future needs</span></div>
+                    <div style="display:flex;gap:16px;align-items:baseline;"><span style="flex:0 0 48px;color:var(--accent);font-weight:600;font-size:15px;">6</span><span class="content-subtitle" style="margin:0;">Left room for additional setup</span></div>
+                  </div>
+                </div>
+              </div>
+              <div class="split-img">
+                <img src="img_project/11/8.jpg" alt="Page structure" style="width:100%;border-radius:8px" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="panel" id="task" data-group="shape" data-nav="framework" style="display:none"></section>
+      <section class="panel" id="component-overview" data-group="shape" data-nav="framework" style="display:none"></section>
+
+      <section class="panel" id="component-1a" data-group="shape" data-nav="component-1a">
+        <div class="panel-inner">
+          <div class="single-col">
+            <div>
+              <h2 class="content-slidesection" style="margin-top:0">Component</h2>
+              <p class="content-title">Created patterns scaling across tools</p>
+            </div>
+            <img src="img_project/11/9a.jpg" alt="Component 1" style="width:100%;border-radius:8px" />
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="component-1b" data-group="shape" data-nav="component-1a">
+        <div class="panel-inner">
+          <div class="single-col">
+            <div>
+              <h2 class="content-slidesection" style="margin-top:0">Component</h2>
+              <p class="content-title">Created patterns scaling across tools</p>
+            </div>
+            <img src="img_project/11/9b.jpg" alt="Component 1" style="width:100%;border-radius:8px" />
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="component-2a" data-group="shape" data-nav="component-1a">
+        <div class="panel-inner">
+          <div class="single-col">
+            <div>
+              <h2 class="content-slidesection" style="margin-top:0">Component</h2>
+              <p class="content-title">Moved task from setup step to edit step to ensure a smooth journey</p>
+            </div>
+            <img src="img_project/11/10a.jpg" alt="Component 2" style="width:100%;border-radius:8px" />
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="component-2b" data-group="shape" data-nav="component-1a">
+        <div class="panel-inner">
+          <div class="single-col">
+            <div>
+              <h2 class="content-slidesection" style="margin-top:0">Component</h2>
+              <p class="content-title">Moved task from setup step to edit step to ensure a smooth journey</p>
+            </div>
+            <img src="img_project/11/10b.jpg" alt="Component 2" style="width:100%;border-radius:8px" />
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="component-3a" data-group="shape" data-nav="component-1a">
+        <div class="panel-inner">
+          <div class="single-col">
+            <div>
+              <h2 class="content-slidesection" style="margin-top:0">Component</h2>
+              <p class="content-title">Customized components for 3 message types</p>
+            </div>
+            <img src="img_project/11/12a.jpg" alt="Component 4" style="width:100%;border-radius:8px" />
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="component-3b" data-group="shape" data-nav="component-1a">
+        <div class="panel-inner">
+          <div class="single-col">
+            <div>
+              <h2 class="content-slidesection" style="margin-top:0">Component</h2>
+              <p class="content-title">Customized components for 3 message types</p>
+            </div>
+            <img src="img_project/11/12b.jpg" alt="Component 4" style="width:100%;border-radius:8px" />
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="component-4a" data-group="shape" data-nav="component-1a">
+        <div class="panel-inner">
+          <div class="single-col">
+            <div>
+              <h2 class="content-slidesection" style="margin-top:0">Component</h2>
+              <p class="content-title">Designed for various configuration needs and scalability</p>
+            </div>
+            <img src="img_project/11/11a.jpg" alt="Component 3" style="width:100%;border-radius:8px" />
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="component-4b" data-group="shape" data-nav="component-1a">
+        <div class="panel-inner">
+          <div class="single-col">
+            <div>
+              <h2 class="content-slidesection" style="margin-top:0">Component</h2>
+              <p class="content-title">Designed for various configuration needs and scalability</p>
+            </div>
+            <img src="img_project/11/11b.jpg" alt="Component 3" style="width:100%;border-radius:8px" />
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="component-5a" data-group="shape" data-nav="component-1a">
+        <div class="panel-inner">
+          <div class="single-col">
+            <div>
+              <h2 class="content-slidesection" style="margin-top:0">Component</h2>
+              <p class="content-title">Left space for legal compliance or additional settings</p>
+            </div>
+            <img src="img_project/11/13a.jpg" alt="Component 5" style="width:100%;border-radius:8px" />
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ LAUNCH ═══ -->
+      <section class="panel" id="launch-divider" data-group="launch">
+        <div class="panel-inner divider-page">
+          <p class="divider-title">Final Delivery</p>
+          <p class="divider-desc">How we tested the solution and measured impact</p>
+        </div>
+      </section>
+
+      <section class="panel" id="principles" data-group="launch">
+        <div class="panel-inner">
+          <div class="single-col">
+            <div>
+              <h2 class="content-slidesection" style="margin-top:0">Design Principles</h2>
+            </div>
+            <div style="position:relative;width:100%;border-radius:8px;overflow:hidden;border:1px solid rgba(0,0,0,0.1)">
+              <a href="designsystem.html#principles" target="_blank" rel="noopener" style="position:absolute;top:12px;right:12px;z-index:2;display:inline-flex;align-items:center;gap:6px;padding:8px 12px;background:#fff;border:1px solid rgba(0,0,0,0.12);border-radius:8px;font-size:13px;font-weight:600;color:#1c1c1e;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,0.12)">Open link <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>
+              <iframe src="designsystem.html#principles" style="width:100%;height:620px;border:0;display:block"></iframe>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="patterns" data-group="launch">
+        <div class="panel-inner">
+          <div class="single-col">
+            <div>
+              <h2 class="content-slidesection" style="margin-top:0">Shared Patterns</h2>
+            </div>
+            <div style="position:relative;width:100%;border-radius:8px;overflow:hidden;border:1px solid rgba(0,0,0,0.1)">
+              <a href="designsystem.html#components" target="_blank" rel="noopener" style="position:absolute;top:12px;right:12px;z-index:2;display:inline-flex;align-items:center;gap:6px;padding:8px 12px;background:#fff;border:1px solid rgba(0,0,0,0.12);border-radius:8px;font-size:13px;font-weight:600;color:#1c1c1e;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,0.12)">Open link <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>
+              <iframe src="designsystem.html#components" style="width:100%;height:620px;border:0;display:block"></iframe>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="share-out" data-group="launch">
+        <div class="panel-inner">
+          <div class="single-col">
+            <div>
+              <h2 class="content-slidesection" style="margin-top:0">Share-Out & OH</h2>
+            </div>
+            <div style="position:relative;width:100%;border-radius:8px;overflow:hidden;border:1px solid rgba(0,0,0,0.1)">
+              <a href="designsystem.html#governance" target="_blank" rel="noopener" style="position:absolute;top:12px;right:12px;z-index:2;display:inline-flex;align-items:center;gap:6px;padding:8px 12px;background:#fff;border:1px solid rgba(0,0,0,0.12);border-radius:8px;font-size:13px;font-weight:600;color:#1c1c1e;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,0.12)">Open link <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>
+              <iframe src="designsystem.html#governance" style="width:100%;height:620px;border:0;display:block"></iframe>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ IMPACT & LEARNING ═══ -->
+      <section class="panel" id="impact-divider" data-group="impact">
+        <div class="panel-inner divider-page">
+          <p class="divider-title">Impact & Scale</p>
+          <p class="divider-desc">Results and reflections</p>
+        </div>
+      </section>
+
+      <section class="panel" id="impact-goals" data-group="impact">
+        <div class="panel-inner">
+          <div class="single-col">
+            <div>
+              <h2 class="content-slidesection" style="margin-top:0">Impact</h2>
+              <p class="content-title">Impact for <b>usability</b>, <b>work efficiency</b>, and <b>product growth</b></p>
+            </div>
+            <div class="impact-grid" style="grid-template-columns:1fr 1.5fr;align-items:stretch;">
+              <div class="slide-img" style="height:100%;border-radius:16px;overflow:hidden"><img src="img_project/11/1.jpg" alt="WhatsApp Message Builder" style="width:100%;height:100%;object-fit:cover" /></div>
+              <div style="background:var(--surface);border-radius:16px;padding:8px 32px 24px;display:flex;flex-direction:column;justify-content:center;">
+                <div style="display:grid;grid-template-columns:1.6fr 1fr 1fr;align-items:end;gap:16px;padding:16px 0 14px;border-bottom:1px solid var(--border);">
+                  <p style="font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:0.6px;text-transform:uppercase;color:var(--ink3);margin:0;">Measurement</p>
+                  <p style="font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:0.6px;text-transform:uppercase;color:var(--ink3);margin:0;text-align:right;">Baseline</p>
+                  <p style="font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:0.6px;text-transform:uppercase;color:var(--ink2);margin:0;text-align:right;">Result</p>
+                </div>
+                <div style="display:grid;grid-template-columns:1.6fr 1fr 1fr;align-items:center;gap:16px;padding:16px 0;border-bottom:1px solid var(--border);">
+                  <p style="font-size:17px;color:var(--ink);margin:0;"><b>Template Submission Rate</b></p>
+                  <p style="font-size:34px;font-weight:600;color:var(--ink3);margin:0;text-align:right;letter-spacing:-0.02em;">60%</p>
+                  <p style="font-size:34px;font-weight:600;color:var(--ink2);margin:0;text-align:right;letter-spacing:-0.02em;">96%</p>
+                </div>
+                <div style="display:grid;grid-template-columns:1.6fr 1fr 1fr;align-items:center;gap:16px;padding:16px 0;border-bottom:1px solid var(--border);">
+                  <p style="font-size:17px;color:var(--ink);margin:0;"><b>Cost Reduced</b></p>
+                  <p style="font-size:34px;font-weight:600;color:var(--ink3);margin:0;text-align:right;letter-spacing:-0.02em;white-space:nowrap;">4 teams</p>
+                  <p style="font-size:34px;font-weight:600;color:var(--ink2);margin:0;text-align:right;letter-spacing:-0.02em;white-space:nowrap;">1 team</p>
+                </div>
+                <div style="display:grid;grid-template-columns:1.6fr 1fr 1fr;align-items:start;gap:16px;padding:16px 0;">
+                  <p style="font-size:17px;color:var(--ink);margin:0;line-height:34px;"><b>Template Types Scaled</b></p>
+                  <p style="font-size:34px;font-weight:600;color:var(--ink3);margin:0;text-align:right;letter-spacing:-0.02em;line-height:1;">7</p>
+                  <div style="text-align:right;">
+                    <p style="font-size:34px;font-weight:600;color:var(--ink2);margin:0;letter-spacing:-0.02em;line-height:1;">10</p>
+                    <p style="font-size:13px;color:var(--ink3);margin:4px 0 0;">in 2 years</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ SCALE ═══ -->
+      <section class="panel" id="scale-structure" data-group="impact" data-nav="scale-structure" data-fixed-layers>
+        <div class="panel-inner" style="position:relative;justify-content:flex-start;">
+          <div class="fixed-layer active" data-layer="0">
+            <div class="single-col" style="padding:40px 0;">
+              <div>
+                <h2 class="content-slidesection" style="margin-top:0">Scale</h2>
+                <p class="content-title">Defined <b>modular system</b> for fast-growing tools across ecosystem</p>
+              </div>
+              <div style="display:flex;gap:12px;flex:1;min-height:0;max-height:70%;">
+                <div style="flex:1;min-width:0;display:flex;flex-direction:column">
+                  <div style="flex:1;min-height:0;overflow:hidden;border-radius:16px;background:var(--surface);padding:20px;position:relative;display:flex;flex-direction:column;">
+                    <p style="font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:0.8px;text-transform:uppercase;color:var(--ink);margin:0 0 12px 0;text-align:center;">Before</p>
+                    <img src="images/meta-2.3.png" alt="Before" style="flex:1;min-height:0;width:100%;object-fit:contain;display:block;border-radius:12px;" />
+                  </div>
+                </div>
+                <div style="flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden;">
+                  <div style="flex:1;min-height:0;overflow:hidden;border-radius:16px;background:var(--surface);padding:20px;position:relative;display:flex;flex-direction:column;">
+                    <p style="font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:0.8px;text-transform:uppercase;color:var(--ink);margin:0 0 12px 0;text-align:center;">After</p>
+                    <img src="images/meta-2.2.png" alt="After" style="flex:1;min-height:0;width:100%;object-fit:contain;display:block;border-radius:12px;" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <script>
+    function switchTab(slide, tab) {
+      const card = event.target.closest('.tab-card');
+      if (card) {
+        card.querySelectorAll('.tab-bar .tab-btn').forEach(btn => btn.classList.remove('active'));
+        card.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+      }
+      event.target.classList.add('active');
+      document.getElementById('tab-' + slide + '-' + tab).classList.add('active');
+    }
+
+    const main = document.getElementById('main');
+    const panels = document.querySelectorAll('.panel');
+    const parentNavItems = document.querySelectorAll('.side-section > .nav-item');
+    const allNavItems = document.querySelectorAll('.nav-item');
+    const navSubs = document.querySelectorAll('.nav-sub');
+
+
+
+    // ── Fixed-layer system: reusable for any panel with [data-fixed-layers] ──
+    const fixedLayerPanels = {};
+    document.querySelectorAll('[data-fixed-layers]').forEach(panel => {
+      const layers = panel.querySelectorAll('.fixed-layer');
+      fixedLayerPanels[panel.id] = { idx: 0, layers, count: layers.length };
+    });
+
+    // Map fixed-layer indices to URL hashes
+    const fixedLayerHashes = {
+      'scale-structure': ['scale-structure'],
+      'framework': ['framework', 'task', 'component-overview']
+    };
+    // Reverse map: hash -> { panelId, idx }
+    const hashToLayer = {};
+    Object.entries(fixedLayerHashes).forEach(([panelId, hashes]) => {
+      hashes.forEach((h, i) => { hashToLayer[h] = { panelId, idx: i }; });
+    });
+
+    // Map hashes to nav targets when they don't match directly
+    const hashNavOverride = { 'component-overview': 'component-1a' };
+
+    function setFixedLayer(panelId, idx) {
+      const p = fixedLayerPanels[panelId];
+      if (!p) return;
+      p.idx = idx;
+      p.layers.forEach((el, i) => el.classList.toggle('active', i === idx));
+      // Update URL hash and nav highlight
+      const hashes = fixedLayerHashes[panelId];
+      if (hashes && hashes[idx]) {
+        history.replaceState(null, '', '#' + hashes[idx]);
+        // Update sub-nav highlights
+        const hashTarget = hashes[idx];
+        const navTarget = hashNavOverride[hashTarget] || (Array.from(allNavItems).some(si => si.dataset.target === hashTarget) ? hashTarget : ((document.getElementById(panelId) && document.getElementById(panelId).dataset.nav) || panelId));
+        navSubs.forEach(sub => {
+          if (sub.dataset.parent !== 'overview') {
+            sub.querySelectorAll('.nav-item').forEach(si => {
+              si.classList.toggle('active', si.dataset.target === navTarget);
+            });
+          }
+        });
+      }
+      // Dissolve image stack for clarify-path
+      if (panelId === 'clarify-path') {
+        const stack = document.getElementById('clarifyImgStack');
+        if (stack) stack.classList.toggle('show-second', idx >= 1);
+      }
+      updatePageCounter();
+    }
+
+    function resetFixedLayers(exceptId) {
+      Object.keys(fixedLayerPanels).forEach(id => {
+        if (id !== exceptId && fixedLayerPanels[id].idx !== 0) setFixedLayer(id, 0);
+      });
+    }
+
+    function getFixedLayerExtra(panelIdx) {
+      let extra = 0;
+      Object.keys(fixedLayerPanels).forEach(id => {
+        const pi = visiblePanels.findIndex(p => p.id === id);
+        if (pi < 0) return;
+        if (panelIdx === pi) extra += fixedLayerPanels[id].idx;
+        else if (panelIdx > pi) extra += fixedLayerPanels[id].count - 1;
+      });
+      return extra;
+    }
+
+
+
+    // ── Click nav item → scroll to panel or swap overview layer ──
+    allNavItems.forEach(item => {
+      item.addEventListener('click', () => {
+        const target = item.dataset.target;
+        // Handle fixed-layer hash targets
+        if (hashToLayer[target]) {
+          const { panelId, idx } = hashToLayer[target];
+          const el = document.getElementById(panelId);
+          if (el) main.scrollTo({ top: el.offsetTop });
+          setFixedLayer(panelId, idx);
+          return;
+        }
+        const el = document.getElementById(target);
+        if (el) {
+          main.scrollTo({ top: el.offsetTop });
+        }
+      });
+    });
+
+
+    // ── Wheel handler for fixed-layer panels ──
+    let fixedWheelCooldown = false;
+    document.querySelectorAll('[data-fixed-layers]').forEach(panel => {
+      panel.addEventListener('wheel', (e) => {
+        if (fixedWheelCooldown) return;
+        const rect = panel.getBoundingClientRect();
+        const mainRect = main.getBoundingClientRect();
+        const isVisible = rect.top >= mainRect.top - 10 && rect.top <= mainRect.top + 10;
+        if (!isVisible) return;
+        const fl = fixedLayerPanels[panel.id];
+        if (!fl) return;
+        if (e.deltaY > 0 && fl.idx < fl.count - 1) {
+          e.preventDefault();
+          fixedWheelCooldown = true;
+          setTimeout(() => fixedWheelCooldown = false, 600);
+          setFixedLayer(panel.id, fl.idx + 1);
+        } else if (e.deltaY < 0 && fl.idx > 0) {
+          e.preventDefault();
+          fixedWheelCooldown = true;
+          setTimeout(() => fixedWheelCooldown = false, 600);
+          setFixedLayer(panel.id, fl.idx - 1);
+        }
+      }, { passive: false });
+    });
+
+    // ── Keyboard arrow keys ──
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'r' || e.key === 'R') {
+        main.scrollTo({ top: visiblePanels[0].offsetTop, behavior: 'smooth' });
+        return;
+      }
+      if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+
+      e.preventDefault();
+      const idx = currentVisiblePanelIdx;
+      const curPanel = visiblePanels[idx];
+
+      // Fixed-layer toggle (generic)
+      if (curPanel && fixedLayerPanels[curPanel.id]) {
+        const fl = fixedLayerPanels[curPanel.id];
+        if (e.key === 'ArrowDown' && fl.idx < fl.count - 1) {
+          setFixedLayer(curPanel.id, fl.idx + 1);
+          return;
+        } else if (e.key === 'ArrowUp' && fl.idx > 0) {
+          setFixedLayer(curPanel.id, fl.idx - 1);
+          return;
+        }
+      }
+
+      if (e.key === 'ArrowDown' && idx < visiblePanels.length - 1) {
+        const nextId = visiblePanels[idx + 1].id;
+        const curId = visiblePanels[idx].id;
+        const overviewIds = ['cover', 'overview', 'beyond', 'component-1a', 'component-1b', 'component-2a', 'component-2b', 'component-3a', 'component-3b', 'component-4a', 'component-4b', 'component-5a', 'context', 'problem', 'solution'];
+        const scrollBehavior = (overviewIds.includes(curId) && overviewIds.includes(nextId)) ? 'instant' : 'smooth';
+        main.scrollTo({ top: visiblePanels[idx + 1].offsetTop, behavior: scrollBehavior });
+      } else if (e.key === 'ArrowUp' && idx > 0) {
+        const prevId = visiblePanels[idx - 1].id;
+        const curId = visiblePanels[idx].id;
+        const overviewIds = ['cover', 'overview', 'beyond', 'component-1a', 'component-1b', 'component-2a', 'component-2b', 'component-3a', 'component-3b', 'component-4a', 'component-4b', 'component-5a', 'context', 'problem', 'solution'];
+        const scrollBehavior = (overviewIds.includes(curId) && overviewIds.includes(prevId)) ? 'instant' : 'smooth';
+        main.scrollTo({ top: visiblePanels[idx - 1].offsetTop, behavior: scrollBehavior });
+      }
+    });
+
+    // ── Click parent nav → toggle sub-nav ──
+    parentNavItems.forEach(item => {
+      item.addEventListener('click', () => {
+        const target = item.dataset.target;
+        const el = document.getElementById(target);
+        if (el) main.scrollTo({ top: el.offsetTop });
+      });
+    });
+
+    // ── Scroll spy ──
+    let activeGroup = 'overview';
+    let scrollSpyReady = false;
+    setTimeout(() => { scrollSpyReady = true; }, 200);
+
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const panel = entry.target;
+          const id = panel.id;
+          const group = panel.dataset.group;
+
+          // Update active group
+          activeGroup = group;
+
+          // Update page counter
+          const prevIdx = currentVisiblePanelIdx;
+          const newIdx = visiblePanels.indexOf(panel);
+          currentVisiblePanelIdx = newIdx;
+          // If entering a fixed-layer panel from below, show last layer
+          if (fixedLayerPanels[id] && prevIdx > newIdx) {
+            setFixedLayer(id, fixedLayerPanels[id].count - 1);
+          }
+          // Reset fixed layers when navigating away
+          resetFixedLayers(id);
+          updatePageCounter();
+
+          // Update URL hash
+          let hashId;
+          if (fixedLayerHashes[id]) {
+            const fl = fixedLayerPanels[id];
+            hashId = fixedLayerHashes[id][fl ? fl.idx : 0];
+          } else {
+            hashId = id;
+          }
+          if (scrollSpyReady && location.hash !== '#' + hashId) {
+            history.replaceState(null, '', '#' + hashId);
+          }
+
+          // Highlight parent nav items
+          parentNavItems.forEach(n => {
+            const nTarget = n.dataset.target;
+            if (nTarget === 'cover') {
+              n.classList.toggle('active', nTarget === id);
+            } else if (nTarget === 'overview') {
+              n.classList.toggle('active', group === 'overview' && id !== 'cover');
+            } else {
+              const nPanel = document.getElementById(nTarget);
+              const nGroup = nPanel ? nPanel.dataset.group : null;
+              n.classList.toggle('active', nGroup === group);
+            }
+          });
+
+          // Show/hide sub-navs
+          navSubs.forEach(sub => {
+            const isActive = sub.dataset.parent === group;
+            if (isActive) {
+              sub.classList.add('open');
+              sub.style.maxHeight = sub.scrollHeight + 'px';
+            } else {
+              sub.classList.remove('open');
+              sub.style.maxHeight = '0';
+            }
+          });
+
+          // Highlight active sub-item
+          navSubs.forEach(sub => {
+            let navId = panel.dataset.nav || id;
+            // Check fixed-layer hash override
+            const fl = fixedLayerPanels[id];
+            if (fl) {
+              const hashes = fixedLayerHashes[id];
+              const currentHash = hashes && hashes[fl.idx];
+              if (currentHash && hashNavOverride[currentHash]) {
+                navId = hashNavOverride[currentHash];
+              } else if (currentHash && Array.from(allNavItems).some(si => si.dataset.target === currentHash)) {
+                navId = currentHash;
+              }
+            }
+            sub.querySelectorAll('.nav-item').forEach(si => {
+              si.classList.toggle('active', si.dataset.target === navId);
+            });
+          });
+        }
+      });
+    }, {
+      root: main,
+      threshold: 0.5
+    });
+
+    panels.forEach(p => observer.observe(p));
+
+    // ── Close dropdown on outside click ──
+    document.addEventListener('click', e => {
+      const dd = document.getElementById('pageDropdown');
+      if (dd && !dd.contains(e.target)) dd.classList.remove('open');
+    });
+
+    // ── Count-up animation for stat numbers ──
+    function animateCount(el, delay) {
+      const target = parseFloat(el.dataset.countTo);
+      const prefix = el.dataset.prefix || '';
+      const suffix = el.dataset.suffix || '';
+      const decimals = parseInt(el.dataset.decimals) || 0;
+      const duration = 1000;
+      let startTime = null;
+
+      // Reset to 0
+      el.textContent = prefix + '0' + suffix;
+
+      setTimeout(() => {
+        function step(timestamp) {
+          if (!startTime) startTime = timestamp;
+          const progress = Math.min((timestamp - startTime) / duration, 1);
+          // Ease out cubic
+          const eased = 1 - Math.pow(1 - progress, 3);
+          const current = eased * target;
+          el.textContent = prefix + current.toFixed(decimals) + suffix;
+          if (progress < 1) {
+            requestAnimationFrame(step);
+          } else {
+            el.textContent = prefix + target.toFixed(decimals) + suffix;
+          }
+        }
+        requestAnimationFrame(step);
+      }, delay);
+    }
+
+    // ── Page counter ──
+    const pageCounter = document.getElementById('pageCounter');
+    const visiblePanels = Array.from(panels).filter(p => p.style.display !== 'none');
+    const fixedLayerExtraTotal = Object.values(fixedLayerPanels).reduce((sum, fl) => sum + fl.count - 1, 0);
+    const totalPages = visiblePanels.length + fixedLayerExtraTotal;
+
+    let currentVisiblePanelIdx = 0;
+
+    function updatePageCounter() {
+      const idx = currentVisiblePanelIdx;
+      const page = idx + 1 + getFixedLayerExtra(idx);
+      pageCounter.textContent = page + '/' + totalPages;
+    }
+
+    // ── Restore position from URL hash on load ──
+    if (location.hash) {
+      main.style.visibility = 'hidden';
+      setTimeout(() => {
+        const hash = location.hash.slice(1);
+        if (hashToLayer[hash]) {
+          const { panelId, idx } = hashToLayer[hash];
+          const el = document.getElementById(panelId);
+          if (el) main.scrollTo({ top: el.offsetTop });
+          setFixedLayer(panelId, idx);
+        } else {
+          const el = document.getElementById(hash);
+          if (el) main.scrollTo({ top: el.offsetTop });
+        }
+        main.style.visibility = '';
+      }, 100);
+    }
+
+    // ── Funnel diagram click to reveal ──
+    // funnelTrigger removed — funnel diagram no longer in findings
+    // ── Findings diagram: auto-animate step1 on scroll, click for step2 ──
+    const findingsDiagram = document.getElementById('findingsDiagram');
+    const findingsPanel = document.getElementById('finding-1');
+    if (findingsDiagram && findingsPanel) {
+      const findingsObserver = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            findingsDiagram.classList.add('step1');
+          } else {
+            findingsDiagram.classList.remove('step1', 'step2');
+          }
+        });
+      }, { root: main, threshold: 0.5 });
+      findingsObserver.observe(findingsPanel);
+    }
+
+    var findingsTrigger = document.getElementById('findingsTrigger');
+    if (findingsTrigger && findingsDiagram) {
+      findingsTrigger.addEventListener('click', () => {
+        findingsDiagram.classList.toggle('step2');
+      });
+    }
+
+
+    // ── Divider page description fade-in ──
+    const dividerObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        } else {
+          entry.target.classList.remove('visible');
+        }
+      });
+    });
+
+    // ── Image Carousels ──
+    document.querySelectorAll('.slide-carousel').forEach(carousel => {
+      const imgs = carousel.querySelectorAll('.carousel-track img');
+      const dots = carousel.querySelectorAll('.carousel-dot');
+      const delay = parseInt(carousel.dataset.autoplay) || 4000;
+      let current = 0;
+      let timer;
+
+      function goTo(idx) {
+        imgs[current].classList.remove('active');
+        if (dots[current]) dots[current].classList.remove('active');
+        current = idx % imgs.length;
+        imgs[current].classList.add('active');
+        if (dots[current]) dots[current].classList.add('active');
+      }
+
+      function startAutoplay() {
+        timer = setInterval(() => goTo(current + 1), delay);
+      }
+
+      dots.forEach((dot, i) => {
+        dot.addEventListener('click', () => {
+          clearInterval(timer);
+          goTo(i);
+          startAutoplay();
+        });
+      });
+
+      startAutoplay();
+    });
+
+    // ── Ecosystem-2 slideshow ──
+    (function() {
+      const srcs = ['img_project/10/40a.jpg', 'img_project/10/40b.jpg', 'img_project/10/40c.jpg'];
+      let current = 0;
+      const container = document.getElementById('ecosystem2-slideshow');
+      if (!container) return;
+      const existing = container.querySelector('img');
+      existing.remove();
+      container.style.position = 'relative';
+      const els = srcs.map((src, i) => {
+        const img = document.createElement('img');
+        img.src = src;
+        img.alt = 'Partner Platforms';
+        img.style.cssText = 'position:absolute;max-width:100%;max-height:100%;object-fit:contain;border-radius:8px;transition:opacity 0.6s ease;opacity:' + (i === 0 ? '1' : '0');
+        container.appendChild(img);
+        return img;
+      });
+      setInterval(() => {
+        els[current].style.opacity = 0;
+        current = (current + 1) % srcs.length;
+        els[current].style.opacity = 1;
+      }, 3000);
+    })();
+
+  </script>
+
+  <script>
+    var exampleIdx = 0;
+    function openExampleModal() {
+      var modal = document.getElementById('example-modal');
+      var mainEl = document.getElementById('main');
+      var rect = mainEl.getBoundingClientRect();
+      modal.style.top = rect.top + 'px';
+      modal.style.left = rect.left + 'px';
+      modal.style.width = rect.width + 'px';
+      modal.style.height = rect.height + 'px';
+      modal.style.display = 'flex';
+      goExampleSlide(0);
+    }
+    function goExampleSlide(i) {
+      exampleIdx = i;
+      document.getElementById('example-track').style.transform = 'translateX(-' + (i * 100) + '%)';
+      document.querySelectorAll('.example-dot').forEach(function(d, j) {
+        d.style.background = j === i ? 'var(--accent)' : 'var(--border)';
+      });
+    }
+    goExampleSlide(0);
+  </script>
+  <script>
+    const fadePanels = document.querySelectorAll('.panel-fade');
+    const fadeObs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('in-view');
+        } else {
+          e.target.classList.remove('in-view');
+        }
+      });
+    }, { threshold: 0.5 });
+    fadePanels.forEach(p => fadeObs.observe(p));
+  </script>
+</body>
+</html>

@@ -1,0 +1,1653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="icon" type="image/png" href="../portfolio/projects/favicons/mu.png">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Intro — Mu Jiun Shie</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@300;400&family=Commissioner:wght@100..900&family=IBM+Plex+Mono:wght@400;500;600;700&family=Figtree:wght@500;600&display=block" rel="stylesheet" />
+  <link rel="stylesheet" href="shared.css" />
+  <style>
+    :root {
+      --ease: cubic-bezier(1, 0.005, 0.015, 0.995);
+      --dur: 0.8s;
+      --intro-ink: #512E08;
+    }
+
+    /* ── VIEWPORT CONTAINER ── */
+    .stage {
+      position: relative;
+      flex: 1;
+      height: 100vh;
+      overflow: hidden;
+      container-type: inline-size;
+    }
+
+    /* ── LABEL ── */
+    .label {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 10;
+      padding: 32px 64px 0;
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 400;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: var(--ink2);
+      pointer-events: none;
+    }
+    .page-counter {
+      font-weight: 400;
+      letter-spacing: 0;
+      color: var(--ink2);
+    }
+
+    /* ── TITLES ── */
+    .title {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .title-hello,
+    .title-mu {
+      position: absolute;
+      color: var(--intro-ink);
+      transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease);
+      white-space: nowrap;
+      pointer-events: auto;
+    }
+    .stage.hide-intro .title-hello,
+    .stage.hide-intro .title-mu {
+      pointer-events: none !important;
+    }
+
+    .title-hello {
+      font-family: 'Figtree', sans-serif;
+      font-weight: 600;
+      font-size: clamp(200px, 46.25cqw, 888px);
+      line-height: 1.2;
+      opacity: 0.1;
+      transform: scale(1);
+    }
+
+    /* Instant reset when jumping back to slide 1 */
+    .stage.slide-1 .title-hello,
+    .stage.slide-1 .title-mu,
+    .stage.slide-1 .card,
+    .stage.slide-1 .bio,
+    .stage.slide-1 .intro-layer {
+      transition: none !important;
+    }
+
+    .title-mu {
+      font-family: 'Commissioner', sans-serif;
+      font-weight: 600;
+      font-size: clamp(36px, 4.58vw, 88px);
+      line-height: 1.2;
+      opacity: 0;
+      transform: scale(0.8);
+      pointer-events: none;
+    }
+
+    /* Slide 36: cards gather back to center, all text hidden */
+    .stage.slide-36 .title-hello,
+    .stage.slide-36 .title-mu,
+    .stage.slide-36 .bio {
+      opacity: 0 !important;
+      visibility: hidden;
+      pointer-events: none;
+      transition: none;
+    }
+
+    /* Slide 2+: Hello out, "I'm Mu" in */
+    .stage.slide-2 .title-hello,
+    .stage.slide-3 .title-hello {
+      opacity: 0;
+      transform: scale(1.1);
+      pointer-events: none;
+    }
+
+    .stage.slide-2 .title-mu {
+      opacity: 1;
+      transform: scale(1);
+      pointer-events: auto;
+    }
+
+    /* Slide 3+: "I'm Mu" out */
+    .stage.slide-3 .title-mu {
+      opacity: 0;
+      transform: scale(1.1);
+      pointer-events: none;
+    }
+
+    /* ── BIO TEXT ── */
+    .bio {
+      position: absolute;
+      left: 0;
+      top: 47%;
+      width: 100%;
+      text-align: center;
+      color: var(--intro-ink);
+      font-size: clamp(20px, 2.1vw, 36px);
+      line-height: 1.4;
+      z-index: 5;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.3s ease-out, transform 0.3s ease-out, font-family 0.3s ease-out, font-weight 0.3s ease-out;
+      font-family: 'Commissioner', sans-serif;
+      font-weight: 400;
+    }
+
+    .stage.slide-3 .bio {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+    .stage.hide-intro .bio {
+      pointer-events: none !important;
+    }
+
+    /* ── LOCATION LABELS ── */
+    .loc {
+      position: absolute;
+      font-family: 'Commissioner', sans-serif;
+      font-weight: 400;
+      font-size: clamp(12px, 1.04vw, 20px);
+      color: var(--intro-ink);
+      z-index: 9;
+      opacity: 0;
+      transition: opacity 0.3s ease-out;
+      pointer-events: none;
+    }
+    .stage.slide-3 .loc {
+      pointer-events: auto;
+    }
+
+    .loc.vertical {
+      writing-mode: vertical-rl;
+    }
+
+    .stage.slide-3 .loc {
+      opacity: 1;
+    }
+
+    .loc[data-loc="yosemite"]      { left:  8.28%; top: 14.63%; }
+    .loc[data-loc="tokyo"]         { left: 13.85%; top: 91.76%; }
+    .loc[data-loc="san-francisco"] { left: 72.40%; top: 17.87%; }
+    .loc[data-loc="monterey"]      { left: 86.93%; top: 45.74%; }
+    .loc[data-loc="wharton"]       { left: 88.80%; top: 84.72%; }
+    .loc[data-loc="buffet"]        { left: 54.95%; top: 82.50%; }
+
+    /* ── IMAGE CARDS ── */
+    .card {
+      position: absolute;
+      background: transparent;
+      border-radius: clamp(16px, 2.67vw, 51px);
+      transition:
+        left var(--dur) var(--ease),
+        top var(--dur) var(--ease),
+        width var(--dur) var(--ease),
+        height var(--dur) var(--ease),
+        transform var(--dur) var(--ease);
+      will-change: left, top, width, height, transform;
+    }
+
+    .card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: inherit;
+      display: block;
+      pointer-events: none;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    /* ── SLIDE 1: CLUSTERED (Hello) ── */
+    .card[data-i="1"] { left: 47.90%; top: 52.02%; width: 16%; height: 34.15%; transform: translate(-50%, -50%) rotate(  0.67deg); z-index: 8; }
+    .card[data-i="2"] { left: 48.98%; top: 52.69%; width: 16%; height: 34.15%; transform: translate(-50%, -50%) rotate(  5.70deg); z-index: 7; }
+    .card[data-i="3"] { left: 45.70%; top: 52.03%; width: 16%; height: 34.15%; transform: translate(-50%, -50%) rotate( -5.28deg); z-index: 6; }
+    .card[data-i="4"] { left: 44.97%; top: 52.68%; width: 16%; height: 34.15%; transform: translate(-50%, -50%) rotate(-14.88deg); z-index: 5; }
+    .card[data-i="5"] { left: 44.14%; top: 53.83%; width: 16%; height: 34.15%; transform: translate(-50%, -50%) rotate(-20.67deg); z-index: 4; }
+    .card[data-i="6"] { left: 50.02%; top: 52.95%; width: 16%; height: 34.15%; transform: translate(-50%, -50%) rotate( 14.60deg); z-index: 3; }
+    .card[data-i="7"] { left: 50.76%; top: 53.17%; width: 16%; height: 34.15%; transform: translate(-50%, -50%) rotate( 20.28deg); z-index: 2; }
+    .card[data-i="8"] { left: 51.37%; top: 53.92%; width: 16%; height: 34.15%; transform: translate(-50%, -50%) rotate( 24.63deg); z-index: 1; }
+
+    /* ── SLIDE 2+: EXPANDED (I'm Mu / Bio) ── */
+    .stage.slide-2 .card[data-i="1"],
+    .stage.slide-3 .card[data-i="1"] { left: 31.09%; top: 84.51%; width: 18%; height: 39.84%; transform: translate(-50%, -50%) rotate( 10.40deg); }
+
+    .stage.slide-2 .card[data-i="2"],
+    .stage.slide-3 .card[data-i="2"] { left: 86.15%; top: 25.86%; width: 18%; height: 40.80%; transform: translate(-50%, -50%) rotate( -8.56deg); }
+
+    .stage.slide-2 .card[data-i="3"],
+    .stage.slide-3 .card[data-i="3"] { left: 18.68%; top: 26.62%; width: 18%; height: 43.79%; transform: translate(-50%, -50%) rotate( 20.41deg); }
+
+    .stage.slide-2 .card[data-i="4"],
+    .stage.slide-3 .card[data-i="4"] { left: 65.23%; top: 16.12%; width: 18%; height: 40.96%; transform: translate(-50%, -50%) rotate( 11.01deg); }
+
+    .stage.slide-2 .card[data-i="5"],
+    .stage.slide-3 .card[data-i="5"] { left: 14.19%; top: 69.78%; width: 18%; height: 43.75%; transform: translate(-50%, -50%) rotate(-11.91deg); }
+
+    .stage.slide-2 .card[data-i="6"],
+    .stage.slide-3 .card[data-i="6"] { left: 81.87%; top: 76.25%; width: 18%; height: 40.25%; transform: translate(-50%, -50%) rotate( 12.66deg); }
+
+    .stage.slide-2 .card[data-i="7"],
+    .stage.slide-3 .card[data-i="7"] { left: 65.61%; top: 87.37%; width: 18%; height: 40.25%; transform: translate(-50%, -50%) rotate( -9.18deg); }
+
+    .stage.slide-2 .card[data-i="8"],
+    .stage.slide-3 .card[data-i="8"] { left: 36.52%; top: 13.74%; width: 18%; height: 40.93%; transform: translate(-50%, -50%) rotate(-11.25deg); }
+
+
+    /* ── AI PROJECT SPLIT LAYOUT ── */
+    .ai-split {
+      display: grid;
+      grid-template-columns: 2fr 3fr;
+      gap: 12px;
+      width: 94%;
+      max-width: 1400px;
+      height: 84%;
+      align-items: center;
+      background: #fff;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 24px rgba(0,0,0,0.03);
+    }
+    .ai-split-text {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 48px 0 48px 44px;
+    }
+    .ai-split-text .wd-desc {
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+    .ai-split-img {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      padding: 32px;
+      overflow: hidden;
+    }
+    .ai-split-img img,
+    .ai-split-img video {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      border-radius: 32px;
+    }
+    .ai-split-img video {
+      border: 1px solid #e0e0e0;
+    }
+
+    .ai-full-img {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .ai-full-img img,
+    .ai-full-img video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    /* ── LINEAR TIMELINE ── */
+    .linear-tl-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 90%;
+      max-width: 1200px;
+      height: 100%;
+      gap: 48px;
+    }
+    .linear-tl-heading {
+      font-family: 'Commissioner', sans-serif;
+      font-weight: 500;
+      font-size: clamp(36px, 3.2vw, 72px);
+      color: var(--intro-ink);
+      margin: 0;
+    }
+    .linear-tl {
+      position: relative;
+      display: flex;
+      width: 100%;
+      gap: 0;
+    }
+    .linear-tl-node {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      position: relative;
+    }
+    .linear-tl-top {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .linear-tl-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #D4C4A8;
+      border: 2px solid #fff;
+      position: relative;
+      z-index: 1;
+      flex-shrink: 0;
+    }
+    .linear-tl-line {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: #D4C4A8;
+      z-index: 0;
+      top: 0; /* positioned by JS */
+    }
+    .active-node .linear-tl-dot {
+      background: #B08C5A;
+      box-shadow: 0 0 0 4px rgba(176, 140, 90, 0.2);
+    }
+    .linear-tl-bottom {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+      margin-top: 16px;
+      text-align: left;
+    }
+    .linear-tl-logo {
+      width: 44px;
+      height: 44px;
+      object-fit: contain;
+      border-radius: 6px;
+    }
+    .linear-tl-emoji {
+      font-size: 36px;
+      line-height: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .linear-tl-year {
+      font-family: var(--mono);
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--intro-ink);
+      opacity: 0.6;
+    }
+    .linear-tl-desc {
+      font-family: 'Commissioner', sans-serif;
+      font-size: clamp(14px, 1vw, 18px);
+      font-weight: 400;
+      color: var(--intro-ink);
+      line-height: 1.3;
+      max-width: 160px;
+    }
+
+    /* ── INTRO LAYER (wraps all intro content for page transition) ── */
+    .intro-layer {
+      position: absolute;
+      inset: 0;
+      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* ── HIDE INTRO ELEMENTS ON SLIDE 4+ ── */
+    .stage.hide-intro .intro-layer {
+      transform: translateY(-100%);
+      pointer-events: none;
+    }
+    .stage.hide-intro .title-hello,
+    .stage.hide-intro .title-mu,
+    .stage.hide-intro .bio {
+      opacity: 0 !important;
+      visibility: hidden;
+    }
+
+    /* ── SLIDE PANELS (slides 4+) ── */
+    .slide-panel {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.15s ease;
+      z-index: 5;
+    }
+    .slide-panel[data-slide="4"] {
+      /* removed - slide 4 now in work-scroller */
+    }
+    .slide-panel.active {
+      opacity: 1;
+      pointer-events: auto;
+      z-index: 15;
+    }
+
+    /* ── WORK SCROLLER (slides 8–16) ── */
+    .work-scroller {
+      position: absolute;
+      inset: 0;
+      overflow-y: auto;
+      scroll-snap-type: y mandatory;
+      scroll-behavior: smooth;
+      z-index: 5;
+      opacity: 0;
+      pointer-events: none;
+      scrollbar-width: none;
+      transform: translateY(100%);
+      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.01s;
+    }
+    .work-scroller.active {
+      opacity: 1;
+      pointer-events: auto;
+      z-index: 15;
+      transform: translateY(0);
+    }
+    .work-scroller::-webkit-scrollbar { display: none; }
+    .work-panel {
+      height: 100%;
+      min-height: 100%;
+      scroll-snap-align: start;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .work-panel[data-has-layers] {
+      display: block;
+    }
+
+    /* ── SECTION DIVIDER TITLES (slides 4, 7, 9, 19) ── */
+    .section-title {
+      font-family: 'Commissioner', sans-serif;
+      font-weight: 600;
+      font-size: 60px;
+      color: var(--intro-ink);
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      text-align: center;
+    }
+
+    /* ── TIMELINE (inside work-scroller panel for slides 5-6) ── */
+    .timeline-wrap {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    .timeline-heading {
+      font-family: 'Commissioner', sans-serif;
+      font-weight: 500;
+      font-size: clamp(36px, 3.2vw, 72px);
+      color: var(--intro-ink);
+      text-align: center;
+      position: absolute;
+      top: 32%;
+      left: 0;
+      right: 0;
+      transition: opacity 0.4s ease;
+      display: none;
+    }
+    .stage.slide-5 .timeline-heading {
+      display: block;
+      font-family: var(--mono);
+      font-size: clamp(14px, 1.1vw, 20px);
+      font-weight: 400;
+      text-align: left;
+      right: auto;
+      padding: 0;
+      opacity: 0;
+    }
+    .stage.slide-6 .timeline-heading {
+      display: block;
+      font-family: 'Commissioner', sans-serif;
+      font-size: clamp(18px, 1.8vw, 34px);
+      font-weight: 400;
+      color: var(--intro-ink);
+      letter-spacing: 0;
+      line-height: 1.2;
+      text-align: center;
+      top: 34%;
+      left: 50%;
+      transform: translateX(-50%);
+      right: auto;
+      padding: 0;
+      opacity: 0;
+    }
+
+    .timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 80%;
+      max-width: 940px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .timeline-card {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      background: white;
+      border-radius: 16px;
+      border: 2px solid transparent;
+      opacity: 1;
+      box-shadow: 0 1px 8px rgba(0,0,0,0.04);
+      padding: 22px 32px;
+    }
+    .timeline-card .tc-text {
+      flex: 0 0 560px;
+    }
+    .timeline-card .tc-year {
+      font-family: 'IBM Plex Mono', monospace;
+      font-weight: 500;
+      font-size: 12px;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+    .timeline-card .tc-desc {
+      font-family: 'Commissioner', sans-serif;
+      font-weight: 400;
+      font-size: clamp(18px, 1.3vw, 24px);
+      color: var(--intro-ink);
+      line-height: 1.3;
+      white-space: nowrap;
+    }
+    .timeline-card .tc-desc strong {
+      font-weight: 700;
+    }
+    .timeline-card[data-tc="3"],
+    .timeline-card[data-tc="4"],
+    .timeline-card[data-tc="5"],
+    .tc-move.tc-move-2 {
+      display: none;
+    }
+    .timeline[data-cards4] .timeline-card[data-tc="3"],
+    .timeline[data-cards4] .timeline-card[data-tc="4"],
+    .timeline[data-cards4] .tc-move.tc-move-2 {
+      display: flex;
+      animation: cardFadeIn 0.5s ease both;
+    }
+    .timeline[data-cards5] .timeline-card[data-tc="5"] {
+      display: flex;
+      animation: cardFadeIn 0.5s ease both;
+    }
+    @keyframes cardFadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .timeline-card .tc-logos {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 22px;
+    }
+    .timeline-card .tc-logos img {
+      width: 48px;
+      height: 48px;
+      object-fit: contain;
+      border-radius: 6px;
+    }
+    .timeline-card .tc-logos img[src*="google"] {
+      width: 40px;
+      height: 40px;
+    }
+    .timeline-card .tc-logos .tc-meta-logo {
+      width: 40px;
+      height: 40px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      border-radius: 6px;
+      flex-shrink: 0;
+    }
+    .timeline-card .tc-logos .tc-meta-logo img {
+      width: 56px;
+      height: 56px;
+    }
+    .tc-move {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: var(--ink2);
+      text-align: left;
+      padding: 18px 0 18px 32px;
+    }
+
+    /* Timeline highlight overlay */
+    .timeline-hl {
+      position: absolute;
+      z-index: 10;
+      border: none;
+      border-radius: 22px;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .timeline-hl.visible { opacity: 1; }
+
+    /* ── WORK DETAIL CARD (shared: slides 8, 10-18) ── */
+    .work-detail {
+      display: flex;
+      width: 94%;
+      max-width: 1400px;
+      height: 84%;
+      background: #fff;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 2px 24px rgba(0,0,0,0.03);
+    }
+    .wd-text {
+      flex: 0 0 44%;
+      padding: 48px 0px 48px 44px;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+    .wd-year {
+      font-family: var(--mono);
+      font-weight: 400;
+      font-size: clamp(14px, 1vw, 18px);
+      color: var(--intro-ink);
+      opacity: 0.7;
+      margin-bottom: 8px;
+    }
+    .wd-logo {
+      width: 44px;
+      height: 44px;
+      object-fit: contain;
+    }
+    .wd-logo[src*="meta-logo"] {
+      width: 64px;
+      height: 64px;
+      margin-top: -10px;
+      margin-left: -10px;
+    }
+    .focus-list {
+      list-style: none;
+      margin: auto 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+    .focus-item .fi-title {
+      font-family: 'Commissioner', sans-serif;
+      font-weight: 400;
+      font-size: clamp(18px, 1.6vw, 28px);
+      color: var(--intro-ink);
+      line-height: 1.35;
+      opacity: 0.28;
+      margin: 0;
+      transition: opacity 0.4s ease, font-weight 0.4s ease;
+    }
+    .focus-item .fi-sub {
+      font-family: 'Commissioner', sans-serif;
+      font-weight: 400;
+      font-size: clamp(14px, 1.1vw, 22px);
+      color: var(--ink2);
+      line-height: 1.35;
+      margin: 0;
+      max-height: 0;
+      opacity: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease, opacity 0.4s ease, margin 0.4s ease;
+    }
+    .focus-item.active .fi-title {
+      opacity: 1;
+      font-weight: 700;
+    }
+    .focus-item.active .fi-sub {
+      margin: 8px 0 0;
+      max-height: 140px;
+      opacity: 1;
+    }
+    .focus-list.fl-anim .focus-item {
+      animation: focusItemIn 0.5s ease both;
+    }
+    .focus-list.fl-anim .focus-item.active {
+      animation: focusActiveIn 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+    @keyframes focusItemIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes focusActiveIn {
+      from { opacity: 0; transform: translateY(3px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .wd-focus-group {
+      margin-top: auto;
+      margin-bottom: auto;
+    }
+    .wd-focus-title {
+      font-family: 'Commissioner', sans-serif;
+      font-weight: 700;
+      font-size: clamp(18px, 1.5vw, 26px);
+      color: var(--intro-ink);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .wd-role {
+      display: block;
+      font-family: var(--mono);
+      font-size: clamp(11px, 0.75vw, 14px);
+      font-weight: 500;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+    .wd-desc {
+      font-family: 'Commissioner', sans-serif;
+      font-weight: 400;
+      font-size: clamp(18px, 1.6vw, 28px);
+      color: var(--intro-ink);
+      line-height: 1.35;
+      margin-top: auto;
+      margin-bottom: auto;
+    }
+    .wd-desc strong { font-weight: 700; }
+    .wd-focus-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--mono);
+      font-size: clamp(11px, 0.75vw, 14px);
+      font-weight: 500;
+      color: var(--accent);
+      margin: 0 0 10px 0;
+    }
+    .wd-desc-sub {
+      font-family: 'Commissioner', sans-serif;
+      font-weight: 400;
+      font-size: clamp(14px, 1.1vw, 22px);
+      color: var(--ink2);
+      line-height: 1.35;
+      margin-top: 12px;
+    }
+    .wd-sub {
+      font-family: 'Commissioner', sans-serif;
+      font-weight: 400;
+      font-size: clamp(18px, 1.5vw, 26px);
+      color: var(--intro-ink);
+      opacity: 0.6;
+      line-height: 1.35;
+    }
+    .wd-focuses-list {
+      margin-top: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .wd-focuses-item {
+      font-family: 'Commissioner', sans-serif;
+      font-weight: 600;
+      font-size: clamp(16px, 1.4vw, 24px);
+      color: var(--intro-ink);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .wd-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+    .wd-img {
+      flex: 1;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px;
+      overflow: hidden;
+      border-radius: 18px;
+      margin: 24px;
+      background: #E4E8EC;
+    }
+    .wd-foot {
+      position: absolute;
+      bottom: 40px;
+      left: 0;
+      right: 0;
+      margin: 0;
+      font-size: 13px;
+      color: #888;
+      text-align: center;
+      line-height: 1.5;
+    }
+    .wd-img img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      border-radius: 8px;
+    }
+
+    /* Per-slide image background colors */
+    [data-slide="8"] .wd-text { flex: 0 0 30%; }
+    [data-slide="8"] .wd-img { background: #F7FAFF; overflow: hidden; }
+    [data-slide="8"] .wd-img img { transform: scale(1.04) translateY(-45px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); border-radius: 30px; }
+    [data-slide="10"] .wd-text { flex: 0 0 30%; }
+    [data-slide="10"] .wd-img { background: #F6F7F9; padding: 0; overflow: hidden; }
+    [data-slide="10"] .wd-img img { width: 105%; height: 105%; object-fit: cover; object-position: center; max-width: none; max-height: none; }
+    [data-slide="12"] .wd-text { flex: 0 0 30%; }
+    [data-slide="12"] .fixed-layer:nth-child(1) .wd-img { padding-right: 0; }
+    [data-slide="12"] .wd-img { background: #F3F7F5; }
+    [data-slide="12"] .fixed-layer:nth-child(2) .wd-img { padding: 32px 0 32px 40px; overflow: hidden; justify-content: flex-start; }
+    [data-slide="12"] .fixed-layer:nth-child(2) .wd-img video { width: 115%; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+    [data-slide="16"] .wd-text { flex: 0 0 30%; }
+    [data-slide="14"] .wd-text { flex: 0 0 30%; }
+    [data-slide="14"] .wd-img { background: #F7FAFF; }
+    [data-slide="16"] .wd-img { background: #FBF8F8; }
+    [data-slide="31"] .wd-img { background: #F1EEEA; align-self: stretch; }
+    [data-slide="33"] .wd-img { background: #FAFAFA; align-self: stretch; }
+    [data-slide="31"] .wd-img video,
+    [data-slide="33"] .wd-img video { width: 40%; border-radius: 36px; box-shadow: 0 8px 24px rgba(0,0,0,0.08); border: 1px solid #e0e0e0; }
+
+    /* ── FIXED LAYER (reusable sub-state system) ── */
+    .fl-wrap { position: relative; width: 100%; height: 100%; }
+    .fixed-layer {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      pointer-events: none;
+    }
+    .fixed-layer.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* ── TODAY'S FOCUS (slide 20) ── */
+    .focus-wrap {
+      text-align: center;
+      width: 92%;
+      max-width: 1700px;
+      padding-right: 20px;
+    }
+    .focus-headline {
+      font-family: 'Commissioner', sans-serif;
+      font-weight: 400;
+      font-size: clamp(18px, 1.8vw, 34px);
+      color: var(--intro-ink);
+      margin-bottom: 40px;
+    }
+    .focus-cards {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+    .focus-card {
+      flex: 1;
+      text-align: center;
+    }
+    .fc-img {
+      width: 100%;
+      background: #F7FAFF;
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+    .fc-img img {
+      width: 100%;
+      height: auto;
+      display: block;
+      object-fit: contain;
+    }
+    .focus-card:nth-child(2) .fc-img {
+      border-radius: 14px;
+    }
+    .focus-card:nth-child(2) .fc-img img {
+      transform: scale(1);
+      filter: drop-shadow(0 6px 20px rgba(0,0,0,0.15));
+    }
+    .fc-title {
+      font-family: 'Commissioner', sans-serif;
+      font-weight: 600;
+      font-size: clamp(18px, 1.5vw, 28px);
+      color: var(--intro-ink);
+      margin-bottom: 4px;
+    }
+    .fc-sub {
+      font-family: 'Commissioner', sans-serif;
+      font-weight: 400;
+      font-size: clamp(14px, 1.1vw, 22px);
+      color: var(--ink2);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="shell">
+
+    <nav class="side">
+      <div class="side-section" style="margin-bottom: 20px;">
+        <p class="side-label">Page</p>
+        <div class="dropdown" id="pageDropdown">
+          <div class="dropdown-toggle" onclick="this.parentElement.classList.toggle('open')">Intro</div>
+          <div class="dropdown-menu">
+            <a class="dropdown-option current" href="intro.html#s-17">Intro</a>
+            <a class="dropdown-option" href="project1.html">Project 1</a>
+            <a class="dropdown-option" href="project2.html">Project 2</a>
+            <a class="dropdown-option" href="project3.html">Project 3</a>
+          </div>
+        </div>
+      </div>
+      <div class="side-section">
+        <p class="side-label">Agenda</p>
+        <a class="nav-item active" data-nav="about" data-go="0">About</a>
+        <a class="nav-item" data-nav="journey" data-go="4">Design Journey</a>
+        <a class="nav-item" data-nav="google" data-go="8">Featured Work</a>
+        <a class="nav-item" data-nav="today" data-go="16">Today's Focus</a>
+      </div>
+    </nav>
+
+  <div class="stage slide-1" id="stage">
+    <p class="label"><span class="page-counter" id="pageCounter">1/22</span> • <span id="labelText">Intro</span></p>
+
+    <div class="intro-layer" id="introLayer">
+      <div class="title">
+        <span class="title-hello">Hello</span>
+        <span class="title-mu">I'm Mu</span>
+      </div>
+
+      <p class="bio">
+        🇹🇼&ensp;Taiwanese<br>
+        🧡&ensp;Travel / Piano / Tennis / Cats
+      </p>
+
+      <!-- Render order: back (8) → front (1), matching Figma z-order -->
+      <div class="card" data-i="8"><img src="images/8.png" alt="" /></div>
+      <div class="card" data-i="7"><img src="images/7.png" alt="" /></div>
+      <div class="card" data-i="6"><img src="images/6.png" alt="" /></div>
+      <div class="card" data-i="5"><img src="images/5.png" alt="" /></div>
+      <div class="card" data-i="4"><img src="images/4.jpg" alt="" /></div>
+      <div class="card" data-i="3"><img src="images/3.jpg" alt="" /></div>
+      <div class="card" data-i="2"><img src="images/2.jpg" alt="" /></div>
+      <div class="card" data-i="1"><img src="images/1.png" alt="" /></div>
+    </div>
+
+    <!-- ══ WORK SCROLLER (slides 4–20) ══ -->
+    <div class="work-scroller" id="workScroller">
+
+    <!-- ══ SLIDE 4: Design Journey (section title) ══ -->
+    <div class="work-panel" data-slide="4">
+      <span class="section-title" style="display:flex;flex-direction:column;align-items:center;gap:8px">Design Journey<span style="font-size:16px;font-weight:400;letter-spacing:0.5px;color:var(--ink2);">2011 – NOW</span></span>
+    </div>
+
+    <!-- ══ SLIDES 5-6: Timeline ══ -->
+    <div class="work-panel" data-slide="5" style="display:block;">
+      <div class="timeline-wrap">
+        <h2 class="timeline-heading" id="tlHeading">My design journey</h2>
+        <div class="timeline" id="tlRow">
+          <div class="tc-move">1st pivot: industrial design → UI/UX</div>
+          <div class="timeline-card" data-tc="1">
+            <div class="tc-text">
+              <div class="tc-year">2011 – 2014</div>
+              <div class="tc-desc"><strong>Undergraduate student</strong>, bachelor's in industrial design</div>
+            </div>
+            <div class="tc-logos">
+              <img src="images/logo/nationaltaipeiuniversityofeducation-logo.png" alt="" />
+              <img src="images/logo/牧貓GrazingcatDesign.jpg" alt="" />
+            </div>
+          </div>
+          <div class="timeline-card" data-tc="2">
+            <div class="tc-text">
+              <div class="tc-year">2015 – 2018</div>
+              <div class="tc-desc"><strong>Product designer</strong>, web products + tools</div>
+            </div>
+            <div class="tc-logos">
+              <img src="images/logo/asus-logo.jpg" alt="" />
+            </div>
+          </div>
+          <div class="tc-move tc-move-2">2nd pivot: Taiwan → United States</div>
+          <div class="timeline-card" data-tc="3">
+            <div class="tc-text">
+              <div class="tc-year">2019 – 2020</div>
+              <div class="tc-desc"><strong>Graduate student</strong>, master's in product design</div>
+            </div>
+            <div class="tc-logos">
+              <img src="images/logo/cmu-logo.png" alt="" />
+            </div>
+          </div>
+          <div class="timeline-card" data-tc="4">
+            <div class="tc-text">
+              <div class="tc-year">2020 – 2026</div>
+              <div class="tc-desc"><strong>Product designer</strong>, business tools + monetization</div>
+            </div>
+            <div class="tc-logos">
+              <img src="images/logo/enovational-logo.jpg" alt="" />
+              <img src="images/logo/google-logo.png" alt="" />
+              <span class="tc-meta-logo"><img src="images/logo/meta-logo.webp" alt="" /></span>
+            </div>
+          </div>
+          <div class="timeline-card" data-tc="5">
+            <div class="tc-text">
+              <div class="tc-year">Now & Next</div>
+              <div class="tc-desc"><strong>Product designer + AI builder</strong></div>
+            </div>
+          </div>
+          <div class="timeline-hl" id="tlHl"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SLIDE 37: Linear Timeline ══ -->
+    <div class="work-panel" data-slide="37" style="display:none;">
+      <div class="linear-tl-wrap">
+        <div class="linear-tl">
+          <div class="linear-tl-line"></div>
+          <div class="linear-tl-node">
+            <div class="linear-tl-top">
+              <span class="linear-tl-year">2014</span>
+            </div>
+            <div class="linear-tl-dot"></div>
+            <div class="linear-tl-bottom">
+              <span class="linear-tl-emoji">🏫</span>
+              <span class="linear-tl-desc">Studies Industrial Design</span>
+            </div>
+          </div>
+          <div class="linear-tl-node">
+            <div class="linear-tl-top">
+              <span class="linear-tl-year">2015</span>
+            </div>
+            <div class="linear-tl-dot"></div>
+            <div class="linear-tl-bottom">
+              <img class="linear-tl-logo" src="images/logo/asus-logo.jpg" alt="" />
+              <span class="linear-tl-desc">ZenFone GUI, Tools</span>
+            </div>
+          </div>
+          <div class="linear-tl-node">
+            <div class="linear-tl-top">
+              <span class="linear-tl-year">2019</span>
+            </div>
+            <div class="linear-tl-dot"></div>
+            <div class="linear-tl-bottom">
+              <span class="linear-tl-emoji">🏫</span>
+              <span class="linear-tl-desc">Studied Product Design</span>
+            </div>
+          </div>
+          <div class="linear-tl-node">
+            <div class="linear-tl-top">
+              <span class="linear-tl-year">2020</span>
+            </div>
+            <div class="linear-tl-dot"></div>
+            <div class="linear-tl-bottom">
+              <span class="linear-tl-logo" style="display:flex;align-items:center;justify-content:center;background:#fff;color:#222;font-family:'Commissioner',sans-serif;font-size:24px;font-weight:700;border:1px solid #e0e0e0;">E</span>
+              <span class="linear-tl-desc">Government Tools</span>
+            </div>
+          </div>
+          <div class="linear-tl-node">
+            <div class="linear-tl-top">
+              <span class="linear-tl-year">2021</span>
+            </div>
+            <div class="linear-tl-dot"></div>
+            <div class="linear-tl-bottom">
+              <img class="linear-tl-logo" src="images/logo/google-logo.png" alt="" />
+              <span class="linear-tl-desc">Search Ads</span>
+            </div>
+          </div>
+          <div class="linear-tl-node active-node">
+            <div class="linear-tl-top">
+              <span class="linear-tl-year">2023 — today</span>
+            </div>
+            <div class="linear-tl-dot"></div>
+            <div class="linear-tl-bottom">
+              <img class="linear-tl-logo" src="images/logo/meta-logo.webp" alt="" />
+              <span class="linear-tl-desc">Monetization, Biz Tools/AI</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SLIDE 7: Works at Google (section title) ══ -->
+    <div class="work-panel" data-slide="7">
+      <span class="section-title">Featured Work</span>
+    </div>
+
+    <!-- ══ SLIDE 8: Google detail ══ -->
+    <div class="work-panel" data-slide="8" data-has-layers>
+      <div class="fl-wrap">
+        <div class="fixed-layer active">
+          <div class="work-detail">
+            <div class="wd-text">
+
+              <img class="wd-logo" src="images/logo/google-logo.png" alt="Google" />
+              <div class="wd-focus-group">
+                <p class="wd-desc" style="margin:0;">Scaled Google Search <strong>ad carousel</strong> to new use cases and verticals</p>
+              </div>
+            </div>
+            <div class="wd-img"><img src="images/workgoogle.gif" alt="" /></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SLIDE 10: Meta overview (2 sub-states) ══ -->
+    <div class="work-panel" data-slide="10" data-has-layers>
+      <div class="fl-wrap">
+        <div class="fixed-layer active">
+          <div class="work-detail">
+            <div class="wd-text">
+
+              <img class="wd-logo" src="images/logo/meta-logo.webp" alt="Meta" />
+              <div class="wd-focus-group">
+                <p class="wd-desc" style="margin:0;">Grew <strong>business messaging</strong> tools and ad platforms with <strong>three focus areas</strong></p>
+                <p class="wd-desc-sub">20+ launches across 6 platforms<br>+20% adoption for Instagram, WhatsApp<br>+$400M revenue growth</p>
+              </div>
+            </div>
+            <div class="wd-img"><img src="images/meta-overview-1.png" alt="" /></div>
+          </div>
+        </div>
+        <div class="fixed-layer">
+          <div class="work-detail">
+            <div class="wd-text">
+
+              <img class="wd-logo" src="images/logo/meta-logo.webp" alt="Meta" />
+              <div class="wd-focus-group">
+                <p class="wd-desc">Grew business messaging with <strong>three focuses</strong></p>
+                <p class="wd-desc-sub">New Tools<br>Modular System<br>Guidance</p>
+              </div>
+            </div>
+            <div class="wd-img"><img src="images/meta-overview-1.png" alt="" /></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ══ SLIDE 12: Focus — New tools or use cases (2 sub-states) ══ -->
+    <div class="work-panel" data-slide="12" data-has-layers>
+      <div class="fl-wrap">
+        <div class="fixed-layer active">
+          <div class="work-detail">
+            <div class="wd-text">
+              <img class="wd-logo" src="images/logo/meta-logo.webp" alt="Meta" />
+              <ul class="focus-list">
+                <li class="focus-item active"><p class="fi-title">New tools or use cases</p><p class="fi-sub">Shaped simple, adoptable solutions that succeeded where other teams had stalled</p></li>
+                <li class="focus-item"><p class="fi-title">Revamp onboarding</p><p class="fi-sub">Landed a new strategic bet, redefining business onboarding journeys around user value and revenue</p></li>
+                <li class="focus-item"><p class="fi-title">Design system</p><p class="fi-sub">Defined a shared framework and components to raise product quality and cut scaling costs</p></li>
+              </ul>
+            </div>
+            <div class="wd-img"><img src="images/meta-1.1.png" alt="" /><p class="wd-foot">+2.6% advertisers, +4.2% revenue, key use case simplified from 12 clicks to zero</p></div>
+          </div>
+        </div>
+        <div class="fixed-layer">
+          <div class="work-detail">
+            <div class="wd-text">
+              <img class="wd-logo" src="images/logo/meta-logo.webp" alt="Meta" />
+              <ul class="focus-list">
+                <li class="focus-item active"><p class="fi-title">New tools or use cases</p><p class="fi-sub">Shaped simple, adoptable solutions that succeeded where other teams had stalled</p></li>
+                <li class="focus-item"><p class="fi-title">Revamp onboarding</p><p class="fi-sub">Landed a new strategic bet, redefining business onboarding journeys around user value and revenue</p></li>
+                <li class="focus-item"><p class="fi-title">Design system</p><p class="fi-sub">Defined a shared framework and components to raise product quality and cut scaling costs</p></li>
+              </ul>
+            </div>
+            <div class="wd-img"><video src="images/inbox-2.mp4" autoplay loop muted playsinline></video><p class="wd-foot">27% user adoption (goal: 10%), unlock $200M revenue</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SLIDE 16: Focus — Revamp Onboarding ══ -->
+    <div class="work-panel" data-slide="16" data-has-layers>
+      <div class="fl-wrap">
+        <div class="fixed-layer active">
+          <div class="work-detail">
+            <div class="wd-text">
+              <img class="wd-logo" src="images/logo/meta-logo.webp" alt="Meta" />
+              <ul class="focus-list">
+                <li class="focus-item"><p class="fi-title">New tools or use cases</p><p class="fi-sub">Shaped simple, adoptable solutions that succeeded where other teams had stalled</p></li>
+                <li class="focus-item active"><p class="fi-title">Revamp onboarding</p><p class="fi-sub">Landed a new strategic bet, redefining business onboarding journeys around user value and revenue</p></li>
+                <li class="focus-item"><p class="fi-title">Design system</p><p class="fi-sub">Defined a shared framework and components to raise product quality and cut scaling costs</p></li>
+              </ul>
+            </div>
+            <div class="wd-img"><img src="images/meta-3.5.png" alt="" /><p class="wd-foot">40% adoption (goal: 5%), +9% funnel conversion, +19.7% revenue</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SLIDE 14: Focus — Design system (2 sub-states) ══ -->
+    <div class="work-panel" data-slide="14" data-has-layers>
+      <div class="fl-wrap">
+        <div class="fixed-layer active">
+          <div class="work-detail">
+            <div class="wd-text">
+              <img class="wd-logo" src="images/logo/meta-logo.webp" alt="Meta" />
+              <ul class="focus-list">
+                <li class="focus-item"><p class="fi-title">New tools or use cases</p><p class="fi-sub">Shaped simple, adoptable solutions that succeeded where other teams had stalled</p></li>
+                <li class="focus-item"><p class="fi-title">Revamp onboarding</p><p class="fi-sub">Landed a new strategic bet, redefining business onboarding journeys around user value and revenue</p></li>
+                <li class="focus-item active"><p class="fi-title">Design system</p><p class="fi-sub">Defined a shared framework and components to raise product quality and cut scaling costs</p></li>
+              </ul>
+            </div>
+            <div class="wd-img"><img src="images/meta-2.1.png" alt="" /><p class="wd-foot">1.6x submission rate, 75% cost reduced</p></div>
+          </div>
+        </div>
+        <div class="fixed-layer">
+          <div class="work-detail">
+            <div class="wd-text">
+              <img class="wd-logo" src="images/logo/meta-logo.webp" alt="Meta" />
+              <ul class="focus-list">
+                <li class="focus-item"><p class="fi-title">New tools or use cases</p><p class="fi-sub">Shaped simple, adoptable solutions that succeeded where other teams had stalled</p></li>
+                <li class="focus-item"><p class="fi-title">Revamp onboarding</p><p class="fi-sub">Landed a new strategic bet, redefining business onboarding journeys around user value and revenue</p></li>
+                <li class="focus-item active"><p class="fi-title">Design system</p><p class="fi-sub">Defined a shared framework and components to raise product quality and cut scaling costs</p></li>
+              </ul>
+            </div>
+            <div class="wd-img">
+              <div style="position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;">
+                <div style="position:absolute;top:14px;left:50%;transform:translateX(-50%);z-index:3;display:flex;gap:4px;background:rgba(255,255,255,0.92);border:1px solid rgba(0,0,0,0.08);border-radius:10px;padding:4px;box-shadow:0 2px 10px rgba(0,0,0,0.1);">
+                  <button type="button" class="ba-btn" onclick="this.parentNode.querySelectorAll('.ba-btn').forEach(b=>{b.style.background='transparent';b.style.color='#666';});this.style.background='var(--intro-ink)';this.style.color='#fff';var c=this.closest('.wd-img');c.querySelectorAll('.ba-img').forEach(i=>i.style.display=i.dataset.ba==='before'?'block':'none');" style="border:none;cursor:pointer;font:inherit;font-size:13px;font-weight:600;padding:5px 14px;border-radius:7px;background:transparent;color:#666;">Before</button>
+                  <button type="button" class="ba-btn" onclick="this.parentNode.querySelectorAll('.ba-btn').forEach(b=>{b.style.background='transparent';b.style.color='#666';});this.style.background='var(--intro-ink)';this.style.color='#fff';var c=this.closest('.wd-img');c.querySelectorAll('.ba-img').forEach(i=>i.style.display=i.dataset.ba==='after'?'block':'none');" style="border:none;cursor:pointer;font:inherit;font-size:13px;font-weight:600;padding:5px 14px;border-radius:7px;background:var(--intro-ink);color:#fff;">After</button>
+                </div>
+                <img class="ba-img" data-ba="before" src="images/meta-2.3.png" alt="" style="display:none;" />
+                <img class="ba-img" data-ba="after" src="images/meta-2.2.png" alt="" style="display:block;" />
+              </div>
+              <p class="wd-foot">80% cost reduction</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SLIDE 19: Today's focus (section title) ══ -->
+    <div class="work-panel" data-slide="19">
+      <span class="section-title">Today's focus</span>
+    </div>
+
+    <!-- ══ SLIDE 20: Today's focus detail ══ -->
+    <div class="work-panel" data-slide="20">
+      <div class="focus-wrap">
+        <div class="focus-cards">
+          <div class="focus-card">
+            <div class="fc-img"><img src="img_project/14/1.jpg" alt="" /></div>
+            <p class="fc-title">New tool</p>
+            <p class="fc-sub">Scoping, AI workflow, speed</p>
+          </div>
+          <div class="focus-card">
+            <div class="fc-img"><img src="img_project/10/1.jpg" alt="" /></div>
+            <p class="fc-title">Revamp onboarding</p>
+            <p class="fc-sub">Research, systems thinking, alignment</p>
+          </div>
+          <div class="focus-card">
+            <div class="fc-img"><img src="img_project/11/1.jpg" alt="" /></div>
+            <p class="fc-title">Design system</p>
+            <p class="fc-sub">Craft, scalability, governance</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    </div><!-- end .work-scroller -->
+
+  </div>
+
+  </div>
+
+  <script>
+    /* ── STATE MACHINE ── */
+    const STATES = [
+      // About
+      { slide: 1, nav: 'about', label: 'Hello' },
+      { slide: 2, nav: 'about', label: "I'm Mu" },
+      { slide: 3, nav: 'about', label: 'Bio' },
+      { slide: 36, nav: 'about', label: 'Gather' },
+      // My design journey
+      { slide: 4, nav: 'journey', label: 'Title' },
+      { slide: 6, nav: 'journey', sub: 1, label: 'Journey', tlTitle: '' },
+      { slide: 6, nav: 'journey', sub: 2, label: 'Journey 2', tlTitle: '', tlCards4: true },
+      { slide: 6, nav: 'journey', sub: 3, label: 'AI builder', tlTitle: '', tlCards4: true, tlCards5: true },
+      // Featured Works
+      { slide: 7, nav: 'google', label: 'Title' },
+      { slide: 8, nav: 'google', sub: 0, label: 'Search ads' },
+      { slide: 10, nav: 'google', sub: 0, label: 'Overview' },
+      { slide: 12, nav: 'google', sub: 0, label: 'New tools 1' },
+      { slide: 12, nav: 'google', sub: 1, label: 'New tools 2' },
+      { slide: 16, nav: 'google', sub: 0, label: 'Onboarding' },
+      { slide: 14, nav: 'google', sub: 0, label: 'Design system 1' },
+      { slide: 14, nav: 'google', sub: 1, label: 'Design system 2' },
+      // Today's Focus
+      { slide: 19, nav: 'today', label: 'Title' },
+      { slide: 20, nav: 'today', label: 'Detail' },
+    ];
+
+    const stage = document.getElementById('stage');
+    const tlHeading = document.getElementById('tlHeading');
+    const tlHl = document.getElementById('tlHl');
+    const tlRow = document.getElementById('tlRow');
+    let stateIdx = 0;
+
+    /* ── NAV ELEMENTS ── */
+    const mainNavItems = document.querySelectorAll('.nav-item[data-nav]');
+    const subNavItems = document.querySelectorAll('.nav-sub .nav-item[data-idx]');
+
+    function smoothScrollTo(el, to, duration) {
+      const start = el.scrollTop;
+      const diff = to - start;
+      let startTime = null;
+      function step(time) {
+        if (!startTime) startTime = time;
+        const t = Math.min((time - startTime) / duration, 1);
+        const ease = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+        el.scrollTop = start + diff * ease;
+        if (t < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+
+    let prevSlide = 1;
+    function goToState(idx) {
+      idx = Math.max(0, Math.min(idx, STATES.length - 1));
+      const prevSt = STATES[stateIdx];
+      stateIdx = idx;
+      const st = STATES[idx];
+
+      // Stage class — delay when scrolling between timeline and next section
+      const scrollingFromTimeline = (prevSt.slide === 6 || prevSt.slide === 5) && st.slide === 7;
+      const scrollingToTimeline = prevSt.slide === 7 && (st.slide === 6 || st.slide === 5);
+      function applyStageClass() {
+        stage.className = 'stage slide-' + st.slide;
+        if (st.slide >= 4 && st.slide !== 36) stage.classList.add('hide-intro');
+      }
+      if (scrollingFromTimeline || scrollingToTimeline) {
+        setTimeout(applyStageClass, 800);
+      } else {
+        applyStageClass();
+      }
+
+      // Intro card timing
+      if (st.slide >= 3 && st.slide <= 3) {
+        stage.style.setProperty('--dur', '0.3s');
+        stage.style.setProperty('--ease', 'ease-out');
+      } else if (st.slide <= 2) {
+        stage.style.setProperty('--dur', '0.8s');
+        stage.style.setProperty('--ease', 'cubic-bezier(1, 0.005, 0.015, 0.995)');
+      }
+
+      // Slide panels (non-scroller)
+      document.querySelectorAll('.slide-panel').forEach(p => {
+        p.classList.toggle('active', parseInt(p.dataset.slide) === st.slide);
+      });
+
+      // Work scroller
+      const workSlides = [4, 5, 6, 7, 8, 10, 12, 14, 16, 30, 31, 33, 19, 20];
+      const scroller = document.getElementById('workScroller');
+      const inWorkSection = workSlides.includes(st.slide);
+      const wasInWorkSection = workSlides.includes(prevSt.slide);
+      scroller.classList.toggle('active', inWorkSection);
+      if (inWorkSection) {
+        // Slide 6 shares panel with slide 5
+        const targetSlide = (st.slide === 6) ? 5 : st.slide;
+        const prevTargetSlide = (prevSt.slide === 6) ? 5 : prevSt.slide;
+        const target = scroller.querySelector('.work-panel[data-slide="' + targetSlide + '"]');
+        if (target) {
+          const scrollTop = target.offsetTop;
+          // Focus slides (#s-11–15): jump instantly, no scroll transition
+          const focusSlides = [12, 14, 16];
+          const betweenFocus = focusSlides.includes(targetSlide) && focusSlides.includes(prevTargetSlide);
+          if (!wasInWorkSection) {
+            scroller.scrollTo({ top: scrollTop, behavior: 'instant' });
+          } else if (prevTargetSlide !== targetSlide) {
+            if (betweenFocus) {
+              scroller.scrollTo({ top: scrollTop, behavior: 'instant' });
+            } else {
+              smoothScrollTo(scroller, scrollTop, 800);
+            }
+          }
+        }
+      }
+
+      // Fixed layers within active work-panel
+      const activePanel = document.querySelector('.work-panel[data-slide="' + st.slide + '"][data-has-layers]');
+      if (activePanel && st.sub !== undefined) {
+        const layers = activePanel.querySelectorAll('.fixed-layer');
+        layers.forEach((l, i) => l.classList.toggle('active', i === st.sub));
+      }
+
+      // Re-trigger focus-list transition only when the slide (highlighted item) changes
+      const focusSlideSet = [12, 16, 14];
+      if (focusSlideSet.includes(st.slide) && st.slide !== prevSt.slide) {
+        const fp = document.querySelector('.work-panel[data-slide="' + st.slide + '"]');
+        const scope = (fp && fp.querySelector('.fixed-layer.active')) || fp;
+        const list = scope && scope.querySelector('.focus-list');
+        if (list) {
+          list.classList.remove('fl-anim');
+          void list.offsetWidth;
+          list.classList.add('fl-anim');
+        }
+      }
+
+      // Timeline (slides 5-6)
+      if (st.slide === 5 || st.slide === 6) {
+        const comingFromScroll = wasInWorkSection && prevSt.slide !== 6 && prevSt.slide !== 5;
+        const delay = comingFromScroll ? 900 : 0;
+        tlHeading.style.transition = 'none';
+        tlHeading.style.opacity = '0';
+        // Set visible card count immediately to prevent flash
+        if (st.tlCards) {
+          tlRow.dataset.visibleCards = st.tlCards;
+        } else {
+          delete tlRow.dataset.visibleCards;
+        }
+        if (st.tlDim) {
+          tlRow.dataset.dimBefore = st.tlDim;
+        } else {
+          delete tlRow.dataset.dimBefore;
+        }
+        if (st.tlCards4) {
+          tlRow.dataset.cards4 = '1';
+        } else {
+          delete tlRow.dataset.cards4;
+        }
+        if (st.tlCards5) {
+          tlRow.dataset.cards5 = '1';
+        } else {
+          delete tlRow.dataset.cards5;
+        }
+        if (comingFromScroll) {
+          tlHl.classList.remove('visible');
+        }
+        setTimeout(() => {
+          tlHeading.textContent = st.tlTitle || '';
+          updateTimelineHl(st.tlHl);
+          const alignCard = st.slide === 5 ? 1 : (st.sub === 0 ? 1 : st.sub === 1 ? 3 : 6);
+          setTimeout(() => {
+            if (st.slide === 6) {
+              tlHeading.style.left = '50%';
+              tlHeading.style.top = '34%';
+              tlHeading.style.transform = 'translateX(-50%)';
+            } else {
+              alignTlHeading(alignCard);
+            }
+            tlHeading.style.transition = 'opacity 0.3s ease-out';
+            tlHeading.style.opacity = '1';
+          }, comingFromScroll ? 100 : 800);
+        }, delay);
+      } else if ((prevSt.slide === 6 || prevSt.slide === 5) && inWorkSection) {
+        // Scrolling away from timeline — don't clear immediately, let it scroll out
+      } else {
+        tlHeading.textContent = '';
+        updateTimelineHl(null);
+      }
+
+      // Nav highlights
+      mainNavItems.forEach(item => {
+        const navMatch = item.dataset.nav === st.nav;
+        item.classList.toggle('active', navMatch);
+      });
+      // Sub-nav: highlight by range (each item covers states up to next item's idx)
+      const subIdxList = Array.from(subNavItems).map(i => parseInt(i.dataset.idx));
+      subNavItems.forEach((item, i) => {
+        const start = parseInt(item.dataset.idx);
+        const end = (i < subIdxList.length - 1) ? subIdxList[i + 1] - 1 : Infinity;
+        item.classList.toggle('active', idx >= start && idx <= end);
+      });
+
+
+      // Page counter + label
+      document.getElementById('pageCounter').textContent = (idx + 1) + '/' + STATES.length;
+      const labelMap = { about: 'Intro', ai: 'Intro', journey: 'Intro', google: 'Intro', meta: 'Intro', today: "Today's Focus" };
+      document.getElementById('labelText').textContent = labelMap[st.nav] || 'Intro';
+
+      history.replaceState(null, '', '#s-' + (idx + 1));
+    }
+
+    /* ── TIMELINE HIGHLIGHT ── */
+    function updateTimelineHl(range) {
+      if (!range) {
+        tlHl.classList.remove('visible');
+        return;
+      }
+      const cards = tlRow.querySelectorAll('.timeline-card');
+      const first = cards[range[0] - 1];
+      const last = cards[range[1] - 1];
+      if (!first || !last) return;
+
+      requestAnimationFrame(() => {
+        const rowRect = tlRow.getBoundingClientRect();
+        const fRect = first.getBoundingClientRect();
+        const lRect = last.getBoundingClientRect();
+        tlHl.style.left = (fRect.left - rowRect.left - 4) + 'px';
+        tlHl.style.top = (fRect.top - rowRect.top - 4) + 'px';
+        tlHl.style.width = (lRect.right - fRect.left + 8) + 'px';
+        tlHl.style.height = (lRect.bottom - fRect.top + 8) + 'px';
+        tlHl.classList.add('visible');
+      });
+    }
+
+    /* ── ALIGN LINEAR TIMELINE LINE TO DOT CENTER ── */
+    function alignLinearTlLine() {
+      const dot = document.querySelector('.linear-tl-dot');
+      const tl = document.querySelector('.linear-tl');
+      const line = document.querySelector('.linear-tl-line');
+      if (dot && tl && line) {
+        const dotRect = dot.getBoundingClientRect();
+        const tlRect = tl.getBoundingClientRect();
+        line.style.top = (dotRect.top - tlRect.top + dotRect.height / 2) + 'px';
+      }
+    }
+    function alignTlHeading(cardIdx) {
+      const card = document.querySelector('.timeline-card[data-tc="' + (cardIdx || 1) + '"]');
+      const heading = document.getElementById('tlHeading');
+      const stageEl = document.getElementById('stage');
+      if (card && heading && stageEl) {
+        const cardRect = card.getBoundingClientRect();
+        const stageRect = stageEl.getBoundingClientRect();
+        heading.style.left = (cardRect.left - stageRect.left) + 'px';
+        heading.style.top = (cardRect.top - stageRect.top - heading.offsetHeight - 20) + 'px';
+      }
+    }
+    window.addEventListener('load', () => { alignLinearTlLine(); setTimeout(() => alignTlHeading(1), 600); });
+    window.addEventListener('resize', () => { alignLinearTlLine(); alignTlHeading(1); });
+
+    /* ── INIT ── */
+    const initMatch = location.hash.match(/s-(\d+)/);
+    if (initMatch) {
+      goToState(parseInt(initMatch[1]) - 1);
+    } else {
+      goToState(0);
+    }
+
+
+
+    /* ── NAV CLICKS ── */
+    mainNavItems.forEach(item => {
+      item.addEventListener('click', e => {
+        e.stopPropagation();
+        goToState(parseInt(item.dataset.go));
+      });
+    });
+    subNavItems.forEach(item => {
+      item.addEventListener('click', e => {
+        e.stopPropagation();
+        goToState(parseInt(item.dataset.idx));
+      });
+    });
+
+    /* ── BLOCK MANUAL SCROLL ON WORK SCROLLER ── */
+    document.getElementById('workScroller').addEventListener('wheel', e => e.preventDefault(), { passive: false });
+    document.getElementById('workScroller').addEventListener('touchmove', e => e.preventDefault(), { passive: false });
+
+    /* ── KEYBOARD ── */
+    document.addEventListener('keydown', e => {
+      if (e.key === 'r' || e.key === 'R') goToState(0);
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+        e.preventDefault();
+        if (stateIdx < STATES.length - 1) goToState(stateIdx + 1);
+      }
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (stateIdx > 0) goToState(stateIdx - 1);
+      }
+    });
+
+    /* ── CARD CLICK → NEXT STATE ── */
+    document.querySelectorAll('.card').forEach(card => {
+      card.style.cursor = 'pointer';
+      card.addEventListener('click', e => {
+        e.stopPropagation();
+        if (stateIdx < STATES.length - 1) goToState(stateIdx + 1);
+      });
+    });
+
+    /* ── DROPDOWN CLOSE ── */
+    document.addEventListener('click', e => {
+      const dd = document.getElementById('pageDropdown');
+      if (dd && !dd.contains(e.target)) dd.classList.remove('open');
+    });
+
+    /* ── RECALC HIGHLIGHT ON RESIZE ── */
+    window.addEventListener('resize', () => {
+      const st = STATES[stateIdx];
+      if (st.slide === 6 && st.tlHl) updateTimelineHl(st.tlHl);
+    });
+
+  </script>
+
+</body>
+</html>

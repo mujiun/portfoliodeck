@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="icon" type="image/png" href="../portfolio/projects/favicons/mu.png">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI-Powered Workflows — Mu Jiun Shie</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Commissioner:wght@100..900&family=IBM+Plex+Mono:wght@400;500;600;700&display=block" rel="stylesheet" />
+  <link rel="stylesheet" href="shared.css" />
+  <style>
+    html, body { overflow: auto; }
+    .side-section > .nav-item { color: var(--ink3); font-weight: 500; padding: 4px 8px; }
+    .nav-sub .nav-item { padding: 4px 8px; padding-left: 16px; }
+    .side-section > .nav-item.active { color: var(--ink2); font-weight: 600; background: transparent; }
+    .nav-sub .nav-item { font-size: 13px; font-weight: 450; display: flex; align-items: center; gap: 8px; letter-spacing: 0.2px; color: #B5B0A9; }
+    .nav-sub .nav-item:hover { color: var(--ink3); background: transparent; }
+    .nav-sub .nav-item.active { color: var(--ink2); font-weight: 600; background: transparent; }
+    .nav-dot { width: 5px; height: 5px; min-width: 5px; min-height: 5px; border-radius: 50%; background: #D4D0CB; flex-shrink: 0; margin: 0 2px; }
+    .nav-sub .nav-item.active .nav-dot { background: var(--ink2); }
+    .shell { height: auto; min-height: 100vh; }
+    .side { position: fixed; top: 0; left: 0; height: 100vh; padding: 36px 0; }
+
+    /* ── MAIN CONTENT ── */
+    .main {
+      flex: 1;
+      margin-left: var(--nav-w);
+    }
+
+    /* ── PANEL ── */
+    .panel {
+      min-height: 100vh;
+      padding: 40px 64px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .panel.active {
+      display: flex;
+    }
+    .panel:has(.tab-card) {
+      height: 100vh;
+      min-height: 100vh;
+    }
+
+    .panel-inner {
+      width: 100%;
+      max-width: 1080px;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      margin: 0 auto;
+    }
+    .panel:has(.tab-card) .panel-inner {
+      height: 100%;
+    }
+
+    /* ── CONTENT ELEMENTS ── */
+    .slide-img {
+      width: 100%;
+      background: var(--surface);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin: 16px 0;
+      display: flex;
+      align-items: center;
+    }
+
+    .slide-img img {
+      width: 100%;
+      display: block;
+      margin: 0 auto;
+    }
+
+    .section-title {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+
+    .content-h2 {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin: 24px 0 12px;
+    }
+
+    .content-h2:first-child { margin-top: 0; }
+
+    .content-p {
+      font-size: 24px;
+      font-weight: 400;
+      color: var(--ink);
+      line-height: 1.35;
+      max-width: 720px;
+    }
+
+    .content-desc {
+      font-size: 17px;
+      font-weight: 400;
+      color: var(--ink3);
+      line-height: 1.4;
+      padding-top: 16px;
+      letter-spacing: 0.01em;
+    }
+
+    .single-col .content-desc {
+      padding-top: 4px;
+    }
+
+    /* ── 1-col layout ── */
+    .single-col {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      justify-content: center;
+      gap: 36px;
+    }
+    .single-col:has(.tab-card) {
+      gap: 16px;
+    }
+
+    .single-col .content-p {
+      max-width: none;
+    }
+
+    .single-col .slide-img {
+      margin: 0;
+    }
+
+    .single-col .slide-img img {
+      width: 100%;
+    }
+
+    /* ── Tab Card ── */
+    .page-header {
+      margin-bottom: 24px;
+    }
+    .page-header:has(+ .tab-card) .page-title {
+      margin-bottom: 0;
+    }
+    .page-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--ink);
+      letter-spacing: -0.01em;
+      line-height: 1.3;
+      margin-bottom: 2px;
+    }
+    .step-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: rgba(213, 108, 0, 0.12);
+      color: var(--accent);
+      font-size: 11px;
+      font-weight: 700;
+      flex-shrink: 0;
+      vertical-align: middle;
+      margin-right: 4px;
+    }
+    .step-arrow {
+      color: var(--ink3);
+      margin: 0 6px;
+      font-size: 14px;
+      vertical-align: middle;
+    }
+    .step-text {
+      vertical-align: middle;
+      font-size: 15px;
+    }
+    .proto-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      background: var(--accent-light);
+      border-radius: 6px;
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 500;
+      text-decoration: none;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+    .proto-link:hover { background: #F9E8D4; }
+    .proto-link svg { flex-shrink: 0; }
+
+    .page-desc {
+      font-size: 16px;
+      font-weight: 400;
+      color: var(--ink);
+      line-height: 1.4;
+      padding-top: 4px;
+    }
+    .tab-card {
+      background: var(--surface);
+      border-radius: 12px;
+      overflow: hidden;
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .tab-bar {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .tab-btn {
+      padding: 12px 24px;
+      font-family: var(--sans);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--ink2);
+      background: none;
+      border: none;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+    }
+    .tab-btn.active {
+      color: var(--accent);
+      font-weight: 600;
+      border-bottom-color: var(--accent);
+    }
+
+    .journey-card {
+      background: var(--surface);
+      border: 1px solid transparent;
+      transition: all 0.25s ease;
+    }
+    .journey-card.highlighted {
+      background: var(--accent-light);
+      border: 1px solid var(--accent);
+    }
+    .tab-btn:hover {
+      color: var(--ink);
+    }
+    .tab-content {
+      display: none;
+      flex: 1;
+      min-height: 0;
+      padding: 24px;
+      align-items: center;
+      justify-content: center;
+    }
+    .tab-content.active {
+      display: flex;
+    }
+    .tab-content img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+    .tab-placeholder {
+      font-size: 14px;
+      color: var(--ink2);
+    }
+
+    /* ── One-Pager PRD ── */
+    .prd {
+      display: flex;
+      flex-direction: column;
+      padding: 0;
+      gap: 0;
+      max-width: 800px;
+    }
+
+    .prd-header {
+      border-bottom: none;
+    }
+    .prd-meta {
+    }
+
+    .prd-title {
+      font-size: 32px;
+      font-weight: 600;
+      color: var(--ink);
+      letter-spacing: -0.01em;
+      line-height: 1.3;
+      margin-bottom: 20px;
+    }
+
+    .prd-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-family: var(--sans);
+      font-size: 14px;
+      color: var(--ink2);
+    }
+
+    .prd-meta-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .prd-meta-label {
+      font-weight: 500;
+      color: var(--ink3);
+      min-width: 70px;
+    }
+
+    .prd-meta-value {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .prd-step {
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--ink3);
+      padding: 3px 8px;
+      background: var(--surface);
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+
+    .prd-step.active {
+      background: var(--accent);
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .prd-step.done {
+      background: var(--accent);
+      color: #fff;
+      opacity: 0.5;
+    }
+
+    .prd-step-arrow {
+      font-size: 9px;
+      color: var(--ink3);
+    }
+
+    .prd-check {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .prd-body {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding-top: 24px;
+    }
+
+    .prd-card {
+      background: none;
+      border-radius: 0;
+      padding: 40px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .prd-card:first-child {
+      border-top: 1px solid var(--border);
+    }
+    .prd-card:last-child {
+      border-bottom: none;
+    }
+
+    .prd-section-title {
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+
+    .prd-text {
+      font-size: 20px;
+      font-weight: 400;
+      color: var(--ink);
+      line-height: 1.3;
+      padding-bottom: 4px;
+      letter-spacing: 0.003em;
+    }
+
+    .prd-text b {
+      font-weight: 600;
+    }
+
+    .prd-metrics {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .prd-metric {
+      background: var(--surface);
+      border-radius: 10px;
+      padding: 20px 12px;
+    }
+
+    .prd-metric-number {
+      font-size: 40px;
+      font-weight: 400;
+      color: var(--ink);
+      letter-spacing: -0.02em;
+      line-height: 1.3;
+      margin-bottom: 6px;
+    }
+
+    .prd-metric-label {
+      font-size: 13px;
+      color: var(--ink2);
+      line-height: 1.4;
+    }
+
+    .prd-target-metrics {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .prd-target {
+      background: var(--surface);
+      border-radius: 10px;
+      padding: 16px 18px;
+    }
+
+    .prd-target-number {
+      font-size: 36px;
+      font-weight: 600;
+      color: var(--ink);
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      margin-bottom: 6px;
+    }
+
+    .prd-target-label {
+      font-size: 13px;
+      color: var(--ink2);
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="shell">
+
+    <!-- ── LEFT NAV ── -->
+    <nav class="side">
+      <div class="side-section" style="margin-bottom: 20px;">
+        <p class="side-label">Page</p>
+        <div class="dropdown" id="pageDropdown">
+          <div class="dropdown-toggle" onclick="this.parentElement.classList.toggle('open')">Interactive PRD</div>
+          <div class="dropdown-menu">
+            <a class="dropdown-option" href="intro.html">Intro</a>
+            <a class="dropdown-option" href="project1.html">Project 1</a>
+            <a class="dropdown-option" href="project2.html">Project 2</a>
+            <a class="dropdown-option current" href="inbox-ai-workflow.html#context-onepager">Interactive PRD</a>
+          </div>
+        </div>
+      </div>
+      <div class="side-section">
+        <a class="nav-item" data-target="context-onepager">Understand</a>
+        <div class="nav-sub" data-parent="context">
+          <a class="nav-item active" data-target="context-onepager"><span class="nav-dot"></span>One-Pager</a>
+          <a class="nav-item" data-target="context-data"><span class="nav-dot"></span>Data Analysis</a>
+          <a class="nav-item" data-target="context-journey"><span class="nav-dot"></span>Consumer Journey</a>
+          <a class="nav-item" data-target="audit"><span class="nav-dot"></span>Audit</a>
+        </div>
+
+        <a class="nav-item" data-target="design-journey">Concepts</a>
+        <div class="nav-sub" data-parent="design">
+          <a class="nav-item" data-target="design-journey"><span class="nav-dot"></span>E2E Journey - 1/6</a>
+          <a class="nav-item" data-target="design-baseline"><span class="nav-dot"></span>Baseline - 1/12</a>
+          <a class="nav-item" data-target="tool-placement"><span class="nav-dot"></span>Tool Placement - 1/12</a>
+          <a class="nav-item" data-target="ai-designs-1"><span class="nav-dot"></span>AI Designs #1 - 1/13</a>
+          <a class="nav-item" data-target="ai-designs-2"><span class="nav-dot"></span>AI Designs #2 - 1/13</a>
+          <a class="nav-item" data-target="design-decision"><span class="nav-dot"></span>Decision - 1/16</a>
+        </div>
+
+        <a class="nav-item" data-target="entry-point">MVP Exploration</a>
+        <div class="nav-sub" data-parent="mvp">
+          <a class="nav-item" data-target="inbox-core"><span class="nav-dot"></span>Permanent Entry - 1/20</a>
+          <a class="nav-item" data-target="entry-point"><span class="nav-dot"></span>Upsell - 1/20</a>
+          <a class="nav-item" data-target="design-flow"><span class="nav-dot"></span>E2E Flow #1 - 1/22</a>
+          <a class="nav-item" data-target="design-flow2"><span class="nav-dot"></span>E2E Flow #2 - 1/22</a>
+          <a class="nav-item" data-target="design-flow3"><span class="nav-dot"></span>E2E Flow #3 - 1/24</a>
+          <a class="nav-item" data-target="design-iteration"><span class="nav-dot"></span>Decision & Iteration - 1/28</a>
+        </div>
+
+      </div>
+    </nav>
+
+    <!-- ── MAIN CONTENT ── -->
+    <div class="main" id="main">
+
+      <!-- ═══ CONTEXT ═══ -->
+      <section class="panel" id="context-onepager" data-group="context" style="align-items:flex-start;justify-content:flex-start;">
+        <div class="panel-inner" style="max-width:none;margin:0;">
+          <div class="prd">
+
+            <!-- Header -->
+            <div class="prd-header">
+              <span style="display:inline-flex;gap:8px;margin-bottom:12px;">
+                <span style="font-size:11px;font-weight:600;padding:4px 12px;border-radius:20px;background:rgba(213,108,0,0.1);color:var(--accent);">In Progress</span>
+                <span style="font-size:11px;font-weight:600;padding:4px 12px;border-radius:20px;background:var(--surface);color:var(--ink3);">0-1 Product</span>
+              </span>
+              <p class="prd-title">Bulk Replies for Inbox</p>
+              <div class="prd-meta">
+                <div class="prd-meta-row">
+                  <span class="prd-meta-label">POCs</span>
+                  <span style="font-size:14px;color:var(--ink);font-family:var(--font);">PD · <span style="font-weight:600;">Mu Jiun Shie</span> &nbsp; CD · <span style="font-weight:600;">Sarah Chen</span> &nbsp; PM · <span style="font-weight:600;">David Park</span> &nbsp; Eng · <span style="font-weight:600;">Kevin Liu</span></span>
+                </div>
+                <div class="prd-meta-row">
+                  <span class="prd-meta-label">Progress</span>
+                  <span style="font-size:14px;font-family:var(--font);color:var(--ink);">Understand → Concept → <span style="font-weight:600;">MVP Design</span> → Development → Dogfood → Launch</span>
+                </div>
+                <div class="prd-meta-row">
+                  <span class="prd-meta-label">Review</span>
+                  <span style="font-size:14px;font-family:var(--font);color:var(--ink);">Design · Content · Pillar · <s>Legal</s></span>
+                </div>
+              </div>
+            </div>
+
+            <div class="prd-body">
+
+              <!-- Today's Problem -->
+              <div class="prd-card">
+                <p class="prd-section-title">Today's Problem</p>
+                <p class="prd-text">Re-engagement drives conversions, but Meta's current inbox tools don't make it easy for businesses to do it at scale</p>
+                <p style="font-size:15px;font-weight:450;color:var(--ink3);line-height:1.4;letter-spacing:0.01em;">Businesses can only reply one by one — most leads never get a follow-up, driving them to third-party tools</p>
+                <div class="prd-metrics" style="text-align:center;">
+                  <div class="prd-metric">
+                    <p class="prd-metric-number">&gt;70%</p>
+                    <p class="prd-metric-label">new conversations came from messaging ads</p>
+                  </div>
+                  <div class="prd-metric">
+                    <p class="prd-metric-number">63%</p>
+                    <p class="prd-metric-label">conversations have no follow-up within 24 hours</p>
+                  </div>
+                  <div class="prd-metric">
+                    <p class="prd-metric-number">~10%</p>
+                    <p class="prd-metric-label">use third-party tools for re-engagement</p>
+                  </div>
+                  <div class="prd-metric">
+                    <p class="prd-metric-number">2.4×</p>
+                    <p class="prd-metric-label">higher conversions after re-engagement</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Proposal -->
+              <div class="prd-card">
+                <p class="prd-section-title">Proposal</p>
+                <p class="prd-text">Introduced bulk replies for Meta Inbox desktop</p>
+                <p style="font-size:15px;font-weight:450;color:var(--ink3);line-height:1.4;letter-spacing:0.01em;">Enable businesses to re-engage existing customers at scale</p>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;">
+                  <div style="background:rgba(67,67,67,0.05);border-radius:10px;padding:16px 18px;">
+                    <p style="font-size:11px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;color:var(--accent);margin-bottom:6px;">MVP</p>
+                    <ul style="font-size:14px;font-weight:400;color:var(--ink);line-height:1.7;padding-left:16px;margin:0;">
+                      <li><b>Audience:</b> Target active advertisers</li>
+                      <li><b>Use Case:</b> Ad conversations follow-up</li>
+                      <li><b>Surface:</b> Business inbox desktop</li>
+                    </ul>
+                  </div>
+                  <div style="background:rgba(67,67,67,0.05);border-radius:10px;padding:16px 18px;">
+                    <p style="font-size:11px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;color:var(--accent);margin-bottom:6px;">Long Term</p>
+                    <ul style="font-size:14px;font-weight:400;color:var(--ink);line-height:1.7;padding-left:16px;margin:0;">
+                      <li><b>Audience:</b> All messaging businesses</li>
+                      <li><b>Use Case:</b> Post-purchase re-engagement, broadcast</li>
+                      <li><b>Surface:</b> Cross-platform rollout</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Target Metrics -->
+              <div class="prd-card">
+                <p class="prd-section-title">Target Metrics</p>
+                <div class="prd-metrics" style="text-align:center;">
+                  <div class="prd-metric">
+                    <p class="prd-metric-number">12M+</p>
+                    <p class="prd-metric-label">active messaging businesses</p>
+                  </div>
+                  <div class="prd-metric">
+                    <p class="prd-metric-number">8%</p>
+                    <p class="prd-metric-label">adoption in first 6 months</p>
+                  </div>
+                  <div class="prd-metric">
+                    <p class="prd-metric-number">$200M+</p>
+                    <p class="prd-metric-label">incremental annual revenue</p>
+                  </div>
+                  <div class="prd-metric">
+                    <p class="prd-metric-number">3.2×</p>
+                    <p class="prd-metric-label">response rate vs. baseline</p>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="context-data" data-group="context" style="align-items:flex-start;justify-content:flex-start;">
+        <div class="panel-inner" style="max-width:none;margin:0;display:flex;flex-direction:column;">
+          <div class="page-header">
+            <p class="page-title">Data Analysis</p>
+            <p class="page-desc">Analyzed family of apps to identify <b>which surface and audience</b> to prioritize</p>
+          </div>
+          <div style="flex:1;width:100%;overflow-x:auto;">
+            <!-- Table 1: Business & Revenue -->
+            <div style="margin-bottom:32px;">
+              <p style="font-size:13px;font-weight:600;color:var(--ink2);text-transform:uppercase;letter-spacing:0.5px;margin:0 0 8px 0;">Business & Revenue</p>
+              <table style="width:100%;border-collapse:separate;border-spacing:0;font-size:16px;font-family:var(--font);table-layout:fixed;">
+                <thead>
+                  <tr style="text-align:left;">
+                    <th style="padding:10px 16px;font-weight:600;color:var(--ink2);font-size:11px;text-transform:uppercase;letter-spacing:0.5px;border-bottom:2px solid var(--border);"></th>
+                    <th style="padding:10px 16px;font-weight:600;color:var(--ink2);font-size:11px;text-transform:uppercase;letter-spacing:0.5px;border-bottom:2px solid var(--border);">Messenger Inbox</th>
+                    <th style="padding:10px 16px;font-weight:600;color:var(--ink2);font-size:11px;text-transform:uppercase;letter-spacing:0.5px;border-bottom:2px solid var(--border);">Instagram Inbox</th>
+                    <th style="padding:10px 16px;font-weight:600;color:var(--ink2);font-size:11px;text-transform:uppercase;letter-spacing:0.5px;border-bottom:2px solid var(--border);">WhatsApp Business</th>
+                    <th style="padding:10px 16px;font-weight:600;color:var(--ink2);font-size:11px;text-transform:uppercase;letter-spacing:0.5px;border-bottom:2px solid var(--border);">Meta Inbox Mobile</th>
+                    <th style="padding:10px 16px;font-weight:600;color:var(--ink);font-size:11px;text-transform:uppercase;letter-spacing:0.5px;border-bottom:2px solid var(--accent);background:rgba(var(--accent-rgb,213,108,0),0.05);border-radius:8px 8px 0 0;">Meta Inbox Desktop</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style="padding:10px 16px;font-weight:500;color:var(--ink2);border-bottom:1px solid var(--border);font-size:12px;">MAB</td>
+                    <td style="padding:10px 16px;color:var(--ink);border-bottom:1px solid var(--border);">182M</td>
+                    <td style="padding:10px 16px;color:var(--ink);border-bottom:1px solid var(--border);">124M</td>
+                    <td style="padding:10px 16px;color:var(--ink);border-bottom:1px solid var(--border);">78M</td>
+                    <td style="padding:10px 16px;color:var(--ink);border-bottom:1px solid var(--border);">12M</td>
+                    <td style="padding:10px 16px;color:var(--ink);border-bottom:1px solid var(--border);background:rgba(var(--accent-rgb,213,108,0),0.05);font-weight:500;">4M</td>
+                  </tr>
+                  <tr>
+                    <td style="padding:10px 16px;font-weight:500;color:var(--ink2);border-bottom:1px solid var(--border);font-size:12px;">MAA</td>
+                    <td style="padding:10px 16px;color:var(--ink);border-bottom:1px solid var(--border);">2.8M <span style="color:var(--ink3);font-size:12px;">(1.5%)</span></td>
+                    <td style="padding:10px 16px;color:var(--ink);border-bottom:1px solid var(--border);">1.9M <span style="color:var(--ink3);font-size:12px;">(1.5%)</span></td>
+                    <td style="padding:10px 16px;color:var(--ink);border-bottom:1px solid var(--border);">1.1M <span style="color:var(--ink3);font-size:12px;">(1.4%)</span></td>
+                    <td style="padding:10px 16px;color:var(--ink);border-bottom:1px solid var(--border);">600K <span style="color:var(--ink3);font-size:12px;">(5%)</span></td>
+                    <td style="padding:10px 16px;color:var(--ink);border-bottom:1px solid var(--border);background:rgba(var(--accent-rgb,213,108,0),0.05);font-weight:500;">400K <span style="color:var(--accent);font-size:12px;font-weight:600;">(10%)</span></td>
+                  </tr>
+                  <tr>
+                    <td style="padding:10px 16px;font-weight:500;color:var(--ink2);border-bottom:1px solid var(--border);font-size:12px;">Revenue</td>
+                    <td style="padding:10px 16px;color:var(--ink);border-bottom:1px solid var(--border);">24%</td>
+                    <td style="padding:10px 16px;color:var(--ink);border-bottom:1px solid var(--border);">18%</td>
+                    <td style="padding:10px 16px;color:var(--ink);border-bottom:1px solid var(--border);">9%</td>
+                    <td style="padding:10px 16px;color:var(--ink);border-bottom:1px solid var(--border);">24%</td>
+                    <td style="padding:10px 16px;color:var(--ink);border-bottom:1px solid var(--border);background:rgba(var(--accent-rgb,213,108,0),0.05);font-weight:500;">25%</td>
+                  </tr>
+                  <tr>
+                    <td style="padding:10px 16px;font-weight:500;color:var(--ink2);border-bottom:1px solid var(--border);font-size:12px;">Top Markets</td>
+                    <td style="padding:10px 16px;color:var(--ink);border-bottom:1px solid var(--border);font-size:13px;">US, India, Brazil</td>
+                    <td style="padding:10px 16px;color:var(--ink);border-bottom:1px solid var(--border);font-size:13px;">US, Brazil, India</td>
+                    <td style="padding:10px 16px;color:var(--ink);border-bottom:1px solid var(--border);font-size:13px;">Brazil, India, Indonesia</td>
+                    <td style="padding:10px 16px;color:var(--ink);border-bottom:1px solid var(--border);font-size:13px;">India, Brazil, Mexico</td>
+                    <td style="padding:10px 16px;color:var(--ink);border-bottom:1px solid var(--border);background:rgba(var(--accent-rgb,213,108,0),0.05);font-weight:500;font-size:13px;">US, UK, Australia</td>
+                  </tr>
+                  <tr>
+                    <td style="padding:10px 16px;font-weight:500;color:var(--ink2);font-size:12px;">Top Verticals</td>
+                    <td style="padding:10px 16px;color:var(--ink);font-size:13px;">Retail, Services, Food & Bev</td>
+                    <td style="padding:10px 16px;color:var(--ink);font-size:13px;">Fashion, Beauty, Food & Bev</td>
+                    <td style="padding:10px 16px;color:var(--ink);font-size:13px;">Retail, Finance, Health</td>
+                    <td style="padding:10px 16px;color:var(--ink);font-size:13px;">Retail, Services, Food & Bev</td>
+                    <td style="padding:10px 16px;color:var(--ink);background:rgba(var(--accent-rgb,213,108,0),0.05);font-weight:500;font-size:13px;">E-commerce, Auto, Real Estate</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Table 2: Conversation Engagement -->
+            <div>
+              <p style="font-size:13px;font-weight:600;color:var(--ink2);text-transform:uppercase;letter-spacing:0.5px;margin:0 0 8px 0;">Conversation Engagement</p>
+              <table style="width:100%;border-collapse:separate;border-spacing:0;font-size:16px;font-family:var(--font);table-layout:fixed;">
+                <thead>
+                  <tr style="text-align:left;">
+                    <th style="padding:10px 16px;font-weight:600;color:var(--ink2);font-size:11px;text-transform:uppercase;letter-spacing:0.5px;border-bottom:2px solid var(--border);"></th>
+                    <th style="padding:10px 16px;font-weight:600;color:var(--ink2);font-size:11px;text-transform:uppercase;letter-spacing:0.5px;border-bottom:2px solid var(--border);">Messenger Inbox</th>
+                    <th style="padding:10px 16px;font-weight:600;color:var(--ink2);font-size:11px;text-transform:uppercase;letter-spacing:0.5px;border-bottom:2px solid var(--border);">Instagram Inbox</th>
+                    <th style="padding:10px 16px;font-weight:600;color:var(--ink2);font-size:11px;text-transform:uppercase;letter-spacing:0.5px;border-bottom:2px solid var(--border);">WhatsApp Business</th>
+                    <th style="padding:10px 16px;font-weight:600;color:var(--ink2);font-size:11px;text-transform:uppercase;letter-spacing:0.5px;border-bottom:2px solid var(--border);">Meta Inbox Mobile</th>
+                    <th style="padding:10px 16px;font-weight:600;color:var(--ink);font-size:11px;text-transform:uppercase;letter-spacing:0.5px;border-bottom:2px solid var(--accent);background:rgba(var(--accent-rgb,213,108,0),0.05);border-radius:8px 8px 0 0;">Meta Inbox Desktop</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style="padding:10px 16px;font-weight:500;color:var(--ink2);border-bottom:1px solid var(--border);font-size:12px;">Organic</td>
+                    <td style="padding:10px 16px;color:var(--ink);border-bottom:1px solid var(--border);">35%</td>
+                    <td style="padding:10px 16px;color:var(--ink);border-bottom:1px solid var(--border);">42%</td>
+                    <td style="padding:10px 16px;color:var(--ink);border-bottom:1px solid var(--border);">72%</td>
+                    <td style="padding:10px 16px;color:var(--ink);border-bottom:1px solid var(--border);">38%</td>
+                    <td style="padding:10px 16px;color:var(--ink);border-bottom:1px solid var(--border);background:rgba(var(--accent-rgb,213,108,0),0.05);font-weight:500;">28%</td>
+                  </tr>
+                  <tr>
+                    <td style="padding:10px 16px;font-weight:500;color:var(--ink2);border-bottom:1px solid var(--border);font-size:12px;">Ads</td>
+                    <td style="padding:10px 16px;color:var(--ink);border-bottom:1px solid var(--border);">65%</td>
+                    <td style="padding:10px 16px;color:var(--ink);border-bottom:1px solid var(--border);">58%</td>
+                    <td style="padding:10px 16px;color:var(--ink);border-bottom:1px solid var(--border);">28%</td>
+                    <td style="padding:10px 16px;color:var(--ink);border-bottom:1px solid var(--border);">62%</td>
+                    <td style="padding:10px 16px;color:var(--ink);border-bottom:1px solid var(--border);background:rgba(var(--accent-rgb,213,108,0),0.05);font-weight:500;">72%</td>
+                  </tr>
+                  <tr>
+                    <td style="padding:10px 16px;font-weight:500;color:var(--ink2);border-bottom:1px solid var(--border);font-size:12px;">Follow-up rate</td>
+                    <td style="padding:10px 16px;color:var(--ink);border-bottom:1px solid var(--border);">18%</td>
+                    <td style="padding:10px 16px;color:var(--ink);border-bottom:1px solid var(--border);">15%</td>
+                    <td style="padding:10px 16px;color:var(--ink);border-bottom:1px solid var(--border);">24%</td>
+                    <td style="padding:10px 16px;color:var(--ink);border-bottom:1px solid var(--border);">14%</td>
+                    <td style="padding:10px 16px;color:var(--ink);border-bottom:1px solid var(--border);background:rgba(var(--accent-rgb,213,108,0),0.05);font-weight:500;">38%</td>
+                  </tr>
+                  <tr>
+                    <td style="padding:10px 16px;font-weight:500;color:var(--ink2);font-size:12px;">Outcome rate</td>
+                    <td style="padding:10px 16px;color:var(--ink);">6.2%</td>
+                    <td style="padding:10px 16px;color:var(--ink);">5.8%</td>
+                    <td style="padding:10px 16px;color:var(--ink);">8.1%</td>
+                    <td style="padding:10px 16px;color:var(--ink);">4.5%</td>
+                    <td style="padding:10px 16px;color:var(--ink);background:rgba(var(--accent-rgb,213,108,0),0.05);font-weight:500;">12.4% <span style="color:var(--accent);font-size:12px;font-weight:600;"></span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="context-journey" data-group="context" style="align-items:flex-start;justify-content:flex-start;">
+        <div class="panel-inner" style="max-width:none;margin:0;display:flex;flex-direction:column;">
+          <div class="page-header" style="margin-bottom:12px;">
+            <p class="page-title">Consumer Journey</p>
+            <p class="page-desc">Consumer journey from ad to convert — understanding where AI can assist at each stage</p>
+          </div>
+
+          <!-- Journey steps grid -->
+          <div style="display:grid;grid-template-columns:1fr 24px 1fr 24px 1fr 24px 1fr;align-items:start;margin-top:24px;">
+            <!-- Row 1: Step cards + arrows -->
+            <div style="background:var(--surface);border-radius:var(--radius);padding:28px;text-align:center;">
+              <p style="font-size:20px;font-weight:600;color:var(--ink);margin-bottom:6px;">Discover Ad</p>
+              <p style="font-size:14px;color:var(--ink2);">See the ad on feed</p>
+            </div>
+            <span style="font-size:24px;color:var(--ink3);text-align:center;align-self:center;">→</span>
+            <div style="background:var(--surface);border-radius:var(--radius);padding:28px;text-align:center;">
+              <p style="font-size:20px;font-weight:600;color:var(--ink);margin-bottom:6px;">Chat with Business</p>
+              <p style="font-size:14px;color:var(--ink2);">Start a conversation</p>
+            </div>
+            <span style="font-size:24px;color:var(--ink3);text-align:center;align-self:center;">→</span>
+            <div style="background:var(--surface);border-radius:var(--radius);padding:28px;text-align:center;">
+              <p style="font-size:20px;font-weight:600;color:var(--ink);margin-bottom:6px;">Consider</p>
+              <p style="font-size:14px;color:var(--ink2);">Evaluate the offer</p>
+            </div>
+            <!-- Opportunity gap arrow -->
+            <div style="display:flex;flex-direction:column;align-items:center;align-self:center;gap:4px;">
+              <span style="font-size:24px;color:var(--accent);text-align:center;">→</span>
+              <span style="font-size:9px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap;">Gap</span>
+            </div>
+            <div style="background:var(--surface);border-radius:var(--radius);padding:28px;text-align:center;">
+              <p style="font-size:20px;font-weight:600;color:var(--ink);margin-bottom:6px;">Convert</p>
+              <p style="font-size:14px;color:var(--ink2);">Take action</p>
+            </div>
+
+            <!-- Row 2: Sub-cards below each step -->
+            <!-- Discover Ad -->
+            <div style="display:flex;flex-direction:column;gap:6px;margin-top:12px;">
+              <div style="background:var(--surface);border-radius:6px;padding:12px 14px;font-size:15px;color:var(--ink);font-weight:450;text-align:center;">Scroll feed</div>
+              <div style="background:var(--surface);border-radius:6px;padding:12px 14px;font-size:15px;color:var(--ink);font-weight:450;text-align:center;">See messaging ad CTA</div>
+              <div style="background:var(--surface);border-radius:6px;padding:12px 14px;font-size:15px;color:var(--ink);font-weight:450;text-align:center;">Tap "Send Message"</div>
+            </div>
+            <!-- arrow spacer -->
+            <div></div>
+            <!-- Chat with Business -->
+            <div style="display:flex;flex-direction:column;gap:6px;margin-top:12px;">
+              <div style="background:var(--surface);border-radius:6px;padding:12px 14px;font-size:15px;color:var(--ink);font-weight:450;text-align:center;">Receive automated greeting</div>
+              <div style="background:var(--surface);border-radius:6px;padding:12px 14px;font-size:15px;color:var(--ink);font-weight:450;text-align:center;">Ask about product/service</div>
+              <div style="background:var(--surface);border-radius:6px;padding:12px 14px;font-size:15px;color:var(--ink);font-weight:450;text-align:center;">Get answers from business</div>
+              <div style="background:var(--surface);border-radius:6px;padding:12px 14px;font-size:15px;color:var(--ink);font-weight:450;text-align:center;">Request details (price, availability)</div>
+            </div>
+            <!-- arrow spacer -->
+            <div></div>
+            <!-- Consider -->
+            <div style="display:flex;flex-direction:column;gap:6px;margin-top:12px;">
+              <div style="background:var(--surface);border-radius:6px;padding:12px 14px;font-size:15px;color:var(--ink);font-weight:450;text-align:center;">Compare options</div>
+              <div style="background:var(--surface);border-radius:6px;padding:12px 14px;font-size:15px;color:var(--ink);font-weight:450;text-align:center;">Ask follow-up questions</div>
+              <div style="background:var(--surface);border-radius:6px;padding:12px 14px;font-size:15px;color:var(--ink);font-weight:450;text-align:center;">Review photos/catalogs</div>
+              <div style="background:var(--surface);border-radius:6px;padding:12px 14px;font-size:15px;color:var(--ink);font-weight:450;text-align:center;">Negotiate or clarify terms</div>
+            </div>
+            <!-- opportunity gap spacer -->
+            <div></div>
+            <!-- Convert -->
+            <div style="display:flex;flex-direction:column;gap:6px;margin-top:12px;">
+              <div style="background:var(--surface);border-radius:6px;padding:12px 14px;font-size:15px;color:var(--ink);font-weight:450;text-align:center;">Place order / book</div>
+              <div style="background:var(--surface);border-radius:6px;padding:12px 14px;font-size:15px;color:var(--ink);font-weight:450;text-align:center;">Share payment info</div>
+              <div style="background:var(--surface);border-radius:6px;padding:12px 14px;font-size:15px;color:var(--ink);font-weight:450;text-align:center;">Confirm purchase</div>
+              <div style="background:var(--surface);border-radius:6px;padding:12px 14px;font-size:15px;color:var(--ink);font-weight:450;text-align:center;">Receive confirmation</div>
+            </div>
+          </div>
+
+          <!-- Opportunity gap callout spanning Consider → Convert -->
+          <div style="margin-top:8px;display:grid;grid-template-columns:1fr 24px 1fr 24px 1fr 24px 1fr;align-items:start;">
+            <!-- empty: Discover Ad -->
+            <div></div>
+            <div></div>
+            <!-- empty: Chat with Business -->
+            <div></div>
+            <div></div>
+            <!-- Opportunity gap spanning Consider + arrow + Convert -->
+            <div style="grid-column:5/8;border:2px dashed var(--accent);border-radius:12px;padding:16px 20px;background:rgba(var(--accent-rgb,213,108,0),0.04);text-align:center;">
+              <p style="font-size:13px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Opportunity Gap</p>
+              <p style="font-size:14px;color:var(--ink2);font-weight:450;">~60% of consumers drop off between consideration and conversion due to slow or no business follow-up</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="audit" data-group="context" style="align-items:flex-start;justify-content:flex-start;">
+        <div class="panel-inner" style="max-width:none;margin:0;display:flex;flex-direction:column;">
+          <div class="page-header">
+            <p class="page-title">Audit</p>
+            <p class="page-desc">Re-engagement drives conversions, but Meta's inbox lacks tools for businesses to re-engage easily and bridge to conversion</p>
+          </div>
+          <div class="tab-card">
+            <div class="tab-bar">
+              <button class="tab-btn active" data-tab="ce-1" onclick="switchTab('audit', 'ce-1', this)">Current Experience 1</button>
+              <button class="tab-btn" data-tab="ce-2" onclick="switchTab('audit', 'ce-2', this)">Current Experience 2</button>
+              <button class="tab-btn" data-tab="bc-3p" onclick="switchTab('audit', 'bc-3p', this)">Example 1</button>
+              <button class="tab-btn" data-tab="bulk-3p" onclick="switchTab('audit', 'bulk-3p', this)">Example 2</button>
+            </div>
+            <div class="tab-content active" id="tab-audit-ce-1" style="padding:24px;align-items:center;justify-content:center;overflow:hidden;">
+              <div style="width:100%;margin:0 auto;max-height:100%;overflow:hidden;border-radius:12px;"><img src="prototype/ref/inbox-1.png" alt="Current Experience 1" style="width:100%;display:block;border-radius:12px;" /></div>
+            </div>
+            <div class="tab-content" id="tab-audit-ce-2" style="padding:24px;align-items:center;justify-content:center;overflow:hidden;">
+              <div style="width:100%;margin:0 auto;max-height:100%;overflow:hidden;border-radius:12px;"><img src="prototype/ref/inbox-2.png" alt="Current Experience 2" style="width:100%;display:block;border-radius:12px;" /></div>
+            </div>
+            <div class="tab-content" id="tab-audit-bc-3p" style="padding:24px;align-items:center;justify-content:center;overflow:hidden;flex-direction:column;">
+              <div style="width:60%;margin:0 auto;max-height:100%;overflow:hidden;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.12);"><img src="img_project/14/broadcast.webp" alt="Broadcast Tool" style="width:100%;display:block;border-radius:12px;" /></div>
+            </div>
+            <div class="tab-content" id="tab-audit-bulk-3p" style="padding:24px;align-items:center;justify-content:center;overflow:hidden;">
+              <div style="width:60%;margin:0 auto;max-height:100%;overflow:hidden;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.12);"><img src="img_project/14/bombot-kh-03.jpg" alt="Bulk Message Tool" style="width:100%;display:block;border-radius:12px;" /></div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ═══ DESIGN EXPLORATION ═══ -->
+      <section class="panel" id="design-journey" data-group="design" style="align-items:flex-start;justify-content:flex-start;">
+        <div class="panel-inner" style="max-width:none;margin:0;display:flex;flex-direction:column;">
+          <div class="page-header" style="margin-bottom:32px;">
+            <p class="page-title">E2E Journey</p>
+            <p class="page-desc">Identify user JTBD and journey, narrowed down scope during design exploration</p>
+          </div>
+          <!-- Journey steps + sub-cards using grid -->
+          <div style="display:grid;grid-template-columns:1fr 24px 1fr 24px 1fr 24px 1fr;align-items:start;">
+            <!-- Row 1: Step cards + arrows -->
+            <div style="background:var(--surface);border-radius:var(--radius);padding:28px;text-align:center;">
+              <p style="font-size:20px;font-weight:600;color:var(--ink);margin-bottom:6px;">Discover</p>
+              <p style="font-size:14px;color:var(--ink2);">Find the tool</p>
+            </div>
+            <span style="font-size:24px;color:var(--ink3);text-align:center;align-self:center;">→</span>
+            <div style="background:var(--surface);border-radius:var(--radius);padding:28px;text-align:center;">
+              <p style="font-size:20px;font-weight:600;color:var(--ink);margin-bottom:6px;">Onboard</p>
+              <p style="font-size:14px;color:var(--ink2);">Set up the tool</p>
+            </div>
+            <span style="font-size:24px;color:var(--ink3);text-align:center;align-self:center;">→</span>
+            <div style="background:var(--surface);border-radius:var(--radius);padding:28px;text-align:center;">
+              <p style="font-size:20px;font-weight:600;color:var(--ink);margin-bottom:6px;">Activate</p>
+              <p style="font-size:14px;color:var(--ink2);">First value moment</p>
+            </div>
+            <span style="font-size:24px;color:var(--ink3);text-align:center;align-self:center;">→</span>
+            <div style="background:var(--surface);border-radius:var(--radius);padding:28px;text-align:center;">
+              <p style="font-size:20px;font-weight:600;color:var(--ink);margin-bottom:6px;">Return</p>
+              <p style="font-size:14px;color:var(--ink2);">Ongoing usage</p>
+            </div>
+
+            <!-- Row 2: Sub-cards below each step -->
+            <!-- Discover -->
+            <div style="display:flex;flex-direction:column;gap:6px;margin-top:12px;">
+              <div class="journey-card" data-scope="decision,req2" style="border-radius:6px;padding:12px 14px;font-size:15px;color:var(--ink);font-weight:450;text-align:center;">Click upsells</div>
+              <div class="journey-card" data-scope="" style="border-radius:6px;padding:12px 14px;font-size:15px;color:var(--ink);font-weight:450;text-align:center;">Click permanent entry</div>
+            </div>
+            <!-- arrow spacer -->
+            <div></div>
+            <!-- Onboard & Activate spanning both columns + arrow between -->
+            <div style="grid-column:3/6;display:flex;flex-direction:column;gap:6px;margin-top:12px;">
+              <div class="journey-card" data-scope="decision,req1" style="border-radius:6px;padding:12px 14px;font-size:15px;color:var(--ink);font-weight:450;text-align:center;">Select audience</div>
+              <div class="journey-card" data-scope="decision,req1" style="border-radius:6px;padding:12px 14px;font-size:15px;color:var(--ink);font-weight:450;text-align:center;">Edit message</div>
+              <div class="journey-card" data-scope="decision,req1" style="border-radius:6px;padding:12px 14px;font-size:15px;color:var(--ink);font-weight:450;text-align:center;">Enable preview</div>
+              <div class="journey-card" data-scope="decision,req1" style="border-radius:6px;padding:12px 14px;font-size:15px;color:var(--ink);font-weight:450;text-align:center;">Submit</div>
+            </div>
+            <!-- arrow spacer -->
+            <div></div>
+            <!-- Return -->
+            <div style="display:flex;flex-direction:column;gap:6px;margin-top:12px;">
+              <div class="journey-card" data-scope="decision,req2" style="border-radius:6px;padding:12px 14px;font-size:15px;color:var(--ink);font-weight:450;text-align:center;">Create new campaign</div>
+              <div class="journey-card" data-scope="" style="border-radius:6px;padding:12px 14px;font-size:15px;color:var(--ink);font-weight:450;text-align:center;">Manage past campaign</div>
+              <div class="journey-card" data-scope="" style="border-radius:6px;padding:12px 14px;font-size:15px;color:var(--ink);font-weight:450;text-align:center;">See insights</div>
+              <div class="journey-card" data-scope="decision" style="border-radius:6px;padding:12px 14px;font-size:15px;color:var(--ink);font-weight:450;text-align:center;">Manage re-engaged chats</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="design-baseline" data-group="design" style="align-items:flex-start;justify-content:flex-start;">
+        <div class="panel-inner" style="max-width:none;margin:0;display:flex;flex-direction:column;">
+          <div class="page-header">
+            <p class="page-title">Baseline</p>
+            <p class="page-desc">Created baseline experience as AI has limitation to grab right design system style and components for new tool</p>
+          </div>
+          <div class="tab-card" style="flex:1;background:#F1F2F5;padding:24px;display:flex;align-items:center;justify-content:center;">
+            <img src="img_project/14/baseline.png" alt="Baseline" style="width:85%;display:block;border-radius:12px;" />
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="tool-placement" data-group="design" style="align-items:flex-start;justify-content:flex-start;">
+        <div class="panel-inner" style="max-width:none;margin:0;display:flex;flex-direction:column;">
+          <div class="page-header">
+            <p class="page-title">Tool Placement</p>
+            <p class="page-desc">Explore based on existing patterns - popup modal, embedded view, and side panel</p>
+          </div>
+          <div class="tab-card" style="flex:1;background:#F1F2F5;padding:24px;display:flex;align-items:center;justify-content:center;">
+            <img src="img_project/14/placement.png" alt="Tool Placement" style="width:100%;display:block;border-radius:12px;" />
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="ai-designs-1" data-group="design" style="align-items:flex-start;justify-content:flex-start;height:100vh;min-height:100vh;">
+        <div class="panel-inner" style="max-width:none;margin:0;display:flex;flex-direction:column;height:100%;">
+          <div class="page-header" style="flex-shrink:0;">
+            <p class="page-title">AI Designs #1</p>
+            <p class="page-desc">Figma Make explored different designs for audience, message, preview</p>
+          </div>
+          <div style="flex:1;min-height:0;display:flex;gap:12px;height:100%;">
+            <div style="flex:1;height:100%;border-radius:var(--radius);background:#F1F2F5;overflow:hidden;padding-top:12%;">
+              <iframe style="border:none;width:200%;height:200%;transform:scale(0.5);transform-origin:top center;margin-left:-50%;" src="https://game-story-64338913.figma.site" allowfullscreen></iframe>
+            </div>
+            <div style="flex:1;height:100%;border-radius:var(--radius);background:#F1F2F5;overflow:hidden;padding-top:12%;">
+              <iframe style="border:none;width:200%;height:200%;transform:scale(0.5);transform-origin:top center;margin-left:-50%;" src="https://game-story-64338913.figma.site" allowfullscreen></iframe>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="ai-designs-2" data-group="design" style="align-items:flex-start;justify-content:flex-start;height:100vh;min-height:100vh;">
+        <div class="panel-inner" style="max-width:none;margin:0;display:flex;flex-direction:column;height:100%;">
+          <div class="page-header" style="flex-shrink:0;">
+            <p class="page-title">AI Designs #2</p>
+            <p class="page-desc">Prioritized simplicity by keeping audience list and message composer, explored 2 layout and decided with 2-col style</p>
+          </div>
+          <div style="flex:1;min-height:0;display:flex;gap:12px;height:100%;">
+            <div style="flex:1;height:100%;border-radius:var(--radius);background:#F1F2F5;overflow:hidden;padding-top:12%;">
+              <iframe style="border:none;width:200%;height:200%;transform:scale(0.5);transform-origin:top center;margin-left:-50%;" src="https://game-story-64338913.figma.site" allowfullscreen></iframe>
+            </div>
+            <div style="flex:1;height:100%;border-radius:var(--radius);background:#F1F2F5;overflow:hidden;padding-top:12%;">
+              <iframe style="border:none;width:200%;height:200%;transform:scale(0.5);transform-origin:top center;margin-left:-50%;" src="https://yearn-aged-56449440.figma.site" allowfullscreen></iframe>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="design-decision" data-group="design" style="align-items:flex-start;justify-content:flex-start;height:100vh;min-height:100vh;">
+        <div class="panel-inner" style="max-width:none;margin:0;display:flex;flex-direction:column;height:100%;">
+          <div class="page-header" style="flex-shrink:0;">
+            <p class="page-title">Decision</p>
+            <p class="page-desc">Chose Idea 5, 2-col layout with audience list and message composer</p>
+          </div>
+          <div class="tab-card" style="flex:1;background:#F1F2F5;padding:24px;display:flex;align-items:center;justify-content:center;">
+            <img src="img_project/14/decision.png" alt="Decision" style="width:100%;display:block;border-radius:12px;" />
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="inbox-core" data-group="mvp" style="align-items:flex-start;justify-content:flex-start;">
+        <div class="panel-inner" style="max-width:none;margin:0;display:flex;flex-direction:column;">
+          <div class="page-header">
+            <p class="page-title">Permanent Entry</p>
+            <p class="page-desc">A crowded interface with no space to add entry point with guidance</p>
+          </div>
+          <div class="tab-card" style="flex:1;background:#F1F2F5;padding:24px;display:flex;align-items:center;justify-content:center;">
+            <img src="img_project/14/inbox-permanent.jpg" alt="Permanent Entry" style="width:85%;display:block;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.12);" />
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="entry-point" data-group="mvp" style="align-items:flex-start;justify-content:flex-start;">
+        <div class="panel-inner" style="max-width:none;margin:0;display:flex;flex-direction:column;">
+          <div class="page-header">
+            <p class="page-title">Upsell</p>
+            <p class="page-desc">For MVP test, we use upsells as entry point as inbox is a crowded space with competing tools</p>
+          </div>
+          <div class="tab-card" style="flex:1;background:#F1F2F5;padding:24px;display:flex;align-items:center;justify-content:center;">
+            <img src="img_project/14/entrypoint.png" alt="Entry Point" style="width:100%;display:block;border-radius:12px;" />
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="design-flow" data-group="mvp" style="align-items:flex-start;justify-content:flex-start;">
+        <div class="panel-inner" style="max-width:none;margin:0;display:flex;flex-direction:column;">
+          <div class="page-header">
+            <p class="page-title">E2E Flow #1</p>
+            <p class="page-desc"><span class="step-badge">1</span><span class="step-text">Discover</span><span class="step-arrow">→</span><span class="step-badge">2</span><span class="step-text">Ad List</span><span class="step-arrow">→</span><span class="step-badge">3</span><span class="step-text">Tool Setup</span><span class="step-arrow">→</span><span class="step-badge">4</span><span class="step-text">Confirmation Screen</span><span class="step-arrow">→</span><span class="step-badge">5</span><span class="step-text">Done</span><a class="proto-link" href="prototype/ubi-inbox-2.html" target="_blank"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9.3V13a1.3 1.3 0 0 1-1.3 1.3H3.3A1.3 1.3 0 0 1 2 13V5.6A1.3 1.3 0 0 1 3.3 4.3H7"/><path d="M10 2h4v4"/><path d="M6.7 9.3L14 2"/></svg>Prototype</a></p>
+          </div>
+          <div class="tab-card" style="flex:1;box-shadow:0 4px 32px rgba(0,0,0,0.12);background:transparent;position:relative;">
+            <iframe style="border:none;position:absolute;top:0;left:0;width:111.11%;height:111.11%;transform:scale(0.9);transform-origin:top center;margin-left:-5.555%;" src="prototype/ubi-inbox-2.html" allowfullscreen></iframe>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="design-flow2" data-group="mvp" style="align-items:flex-start;justify-content:flex-start;">
+        <div class="panel-inner" style="max-width:none;margin:0;display:flex;flex-direction:column;">
+          <div class="page-header">
+            <p class="page-title">E2E Flow #2</p>
+            <p class="page-desc"><span class="step-badge">1</span><span class="step-text">Discover</span><span class="step-arrow">→</span><span class="step-badge">2</span><span class="step-text">Tool Setup with Ad Dropdown</span><span class="step-arrow">→</span><span class="step-badge">3</span><span class="step-text">Confirmation Screen</span><span class="step-arrow">→</span><span class="step-badge">4</span><span class="step-text">Done</span><a class="proto-link" href="prototype/ubi-inbox-3.html" target="_blank"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9.3V13a1.3 1.3 0 0 1-1.3 1.3H3.3A1.3 1.3 0 0 1 2 13V5.6A1.3 1.3 0 0 1 3.3 4.3H7"/><path d="M10 2h4v4"/><path d="M6.7 9.3L14 2"/></svg>Prototype</a></p>
+          </div>
+          <div class="tab-card" style="flex:1;box-shadow:0 4px 32px rgba(0,0,0,0.12);background:transparent;position:relative;">
+            <iframe style="border:none;position:absolute;top:0;left:0;width:111.11%;height:111.11%;transform:scale(0.9);transform-origin:top center;margin-left:-5.555%;" src="prototype/ubi-inbox-3.html" allowfullscreen></iframe>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="design-flow3" data-group="mvp" style="align-items:flex-start;justify-content:flex-start;">
+        <div class="panel-inner" style="max-width:none;margin:0;display:flex;flex-direction:column;">
+          <div class="page-header">
+            <p class="page-title">E2E Flow #3</p>
+            <p class="page-desc"><span class="step-badge">1</span><span class="step-text">Discover</span><span class="step-arrow">→</span><span class="step-badge">2</span><span class="step-text">Tool Setup with Ad Dropdown</span><span class="step-arrow">→</span><span class="step-badge">3</span><span class="step-text">Confirmation Screen</span><span class="step-arrow">→</span><span class="step-badge">4</span><span class="step-text">Done, See Label Applied</span><a class="proto-link" href="prototype/ubi-inbox-4.html" target="_blank"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9.3V13a1.3 1.3 0 0 1-1.3 1.3H3.3A1.3 1.3 0 0 1 2 13V5.6A1.3 1.3 0 0 1 3.3 4.3H7"/><path d="M10 2h4v4"/><path d="M6.7 9.3L14 2"/></svg>Prototype</a></p>
+          </div>
+          <div class="tab-card" style="flex:1;box-shadow:0 4px 32px rgba(0,0,0,0.12);background:transparent;position:relative;">
+            <iframe style="border:none;position:absolute;top:0;left:0;width:111.11%;height:111.11%;transform:scale(0.9);transform-origin:top center;margin-left:-5.555%;" src="prototype/ubi-inbox-4.html" allowfullscreen></iframe>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="design-iteration" data-group="mvp" style="align-items:flex-start;justify-content:flex-start;">
+        <div class="panel-inner" style="max-width:none;margin:0;display:flex;flex-direction:column;">
+          <div class="page-header">
+            <p class="page-title">Decision & Iteration</p>
+            <p class="page-desc"><strong>Key finding:</strong> Users want re-engagement tools since the process is highly manual, but struggle to find the tool again after first use.<br><strong>Iteration:</strong> Revise the upsell rules to show it more on main screen so users can easily re-enter the tool when needed.</p>
+          </div>
+          <div class="tab-card" style="flex:1;box-shadow:0 4px 32px rgba(0,0,0,0.12);background:transparent;position:relative;">
+            <iframe style="border:none;position:absolute;top:0;left:0;width:111.11%;height:111.11%;transform:scale(0.9);transform-origin:top center;margin-left:-5.555%;" src="prototype/ubi-inbox-5.html" allowfullscreen></iframe>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ LAUNCH ═══ -->
+
+    </div>
+  </div>
+
+  <script>
+    const main = document.getElementById('main');
+    const panels = document.querySelectorAll('.panel');
+    const parentNavItems = document.querySelectorAll('.side-section > .nav-item');
+    const allNavItems = document.querySelectorAll('.nav-item');
+    const navSubs = document.querySelectorAll('.nav-sub');
+
+    // ── Show panel by id ──
+    function showPanel(id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      panels.forEach(p => p.classList.remove('active'));
+      el.classList.add('active');
+
+      const group = el.dataset.group;
+      history.replaceState(null, '', '#' + id);
+
+      // Highlight parent nav items
+      parentNavItems.forEach(n => {
+        const nTarget = n.dataset.target;
+        const nPanel = document.getElementById(nTarget);
+        const nGroup = nPanel ? nPanel.dataset.group : null;
+        n.classList.toggle('active', nGroup === group);
+      });
+
+      // Show/hide sub-navs based on active group
+      navSubs.forEach(sub => {
+        const isActive = sub.dataset.parent === group;
+        if (isActive) {
+          sub.classList.add('open');
+          sub.style.maxHeight = sub.scrollHeight + 'px';
+          sub.style.opacity = '1';
+        } else {
+          sub.classList.remove('open');
+          sub.style.maxHeight = '0';
+          sub.style.opacity = '0';
+        }
+      });
+
+      // Highlight active sub-item
+      navSubs.forEach(sub => {
+        const navId = el.dataset.nav || id;
+        sub.querySelectorAll('.nav-item').forEach(si => {
+          si.classList.toggle('active', si.dataset.target === navId);
+        });
+      });
+    }
+
+    // ── Click nav item → show panel ──
+    allNavItems.forEach(item => {
+      item.addEventListener('click', () => {
+        const target = item.dataset.target;
+        if (target) showPanel(target);
+      });
+    });
+
+    // ── Tab switching ──
+    const journeySubtexts = {
+      exploration: 'Discuss all possible JTBD for each steps',
+      decision: 'Simplify tool capacities for MVP scope (2 month to build)',
+      req1: 'Build MVP tool with these capacities in one screen',
+      req2: 'Build dynamic upsells for first/returning users'
+    };
+    const journeyPillLabels = {
+      'exploration': 'exploration',
+      'decision': 'decision',
+      'design requirement #1': 'req1',
+      'design requirement #2': 'req2'
+    };
+    function switchJourneyView(scope) {
+      document.querySelectorAll('.journey-pill').forEach(btn => {
+        const btnScope = journeyPillLabels[btn.textContent.toLowerCase()] || btn.textContent.toLowerCase();
+        const isActive = btnScope === scope;
+        btn.style.background = isActive ? 'rgba(213,108,0,0.1)' : 'var(--surface)';
+        btn.style.color = isActive ? 'var(--accent)' : 'var(--ink3)';
+      });
+      document.querySelectorAll('.journey-card').forEach(card => {
+        const scopes = card.dataset.scope ? card.dataset.scope.split(',') : [];
+        if (scope !== 'exploration' && scopes.includes(scope)) {
+          card.classList.add('highlighted');
+        } else {
+          card.classList.remove('highlighted');
+        }
+      });
+      const subtext = document.querySelector('.journey-subtext');
+      if (subtext) {
+        subtext.textContent = journeySubtexts[scope] || '';
+      }
+    }
+    // Init default state — Exploration shows no highlights
+    switchJourneyView('decision');
+
+    function switchTab(slide, tab, clickedBtn) {
+      let section = document.getElementById('context-' + slide) || document.getElementById('design-' + slide) || document.getElementById(slide);
+      if (!section) return;
+      section.querySelectorAll('.tab-btn').forEach(btn => {
+        if (clickedBtn) {
+          btn.classList.toggle('active', btn === clickedBtn);
+        } else {
+          btn.classList.toggle('active', btn.textContent.toLowerCase().replace(/[\s-]/g, '').includes(tab));
+        }
+      });
+      section.querySelectorAll('.tab-content').forEach(tc => {
+        tc.classList.toggle('active', tc.id === 'tab-' + slide + '-' + tab);
+      });
+    }
+
+    // ── Restore from URL hash or show first panel ──
+    if (location.hash) {
+      showPanel(location.hash.slice(1));
+    } else {
+      showPanel(panels[0].id);
+    }
+  </script>
+
+</body>
+</html>
