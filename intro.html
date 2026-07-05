@@ -540,110 +540,112 @@
 
     .timeline {
       display: flex;
-      flex-direction: column;
-      gap: 10px;
-      width: 80%;
-      max-width: 940px;
+      gap: 0;
+      justify-content: center;
+      width: 88%;
+      max-width: 1360px;
       position: absolute;
-      top: 50%;
+      top: 42%;
       left: 50%;
-      transform: translate(-50%, -50%);
+      transform: translateX(-50%);
+      transition: gap 0.7s cubic-bezier(0.16, 1, 0.3, 1);
     }
+    .stage.slide-5 .timeline,
+    .stage.slide-6 .timeline { gap: 8px; }
 
     .timeline-card {
-      display: flex;
-      align-items: center;
-      gap: 24px;
+      flex: 0 0 0px;
+      min-width: 0;
+      overflow: hidden;
       background: white;
-      border-radius: 16px;
+      border-radius: 20px;
+      transition: flex 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+                  opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
       border: 2px solid transparent;
-      opacity: 1;
+      opacity: 0;
+      z-index: 1;
       box-shadow: 0 1px 8px rgba(0,0,0,0.04);
-      padding: 22px 32px;
     }
-    .timeline-card .tc-text {
-      flex: 0 0 560px;
+    .timeline-card[data-tc="1"] { z-index: 2; }
+    .timeline-card .tc-inner {
+      min-width: 150px;
+      padding: 28px 20px;
     }
     .timeline-card .tc-year {
       font-family: 'IBM Plex Mono', monospace;
       font-weight: 500;
       font-size: 12px;
-      color: var(--accent);
+      color: var(--intro-ink);
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
+    }
+    .timeline-card .tc-logo {
+      width: 40px;
+      height: 40px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      font-size: 28px;
+    }
+    .timeline-card .tc-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .timeline-card[data-tc="3"] .tc-logo,
+    .timeline-card[data-tc="7"] .tc-logo {
+      width: 56px;
+      overflow: hidden;
+    }
+    .timeline-card[data-tc="3"] .tc-logo img,
+    .timeline-card[data-tc="7"] .tc-logo img {
+      width: 160%;
+      height: 160%;
+      object-fit: contain;
+      margin-left: -30%;
+      margin-top: 0%;
+    }
+    .timeline-card[data-tc="6"] .tc-logo img {
+      margin-left: -6px;
+    }
+    .timeline-card[data-tc="2"] .tc-logo img,
+    .timeline-card[data-tc="4"] .tc-logo img,
+    .timeline-card[data-tc="5"] .tc-logo img {
+      border-radius: 6px;
     }
     .timeline-card .tc-desc {
       font-family: 'Commissioner', sans-serif;
       font-weight: 400;
-      font-size: clamp(18px, 1.3vw, 24px);
+      font-size: clamp(14px, 0.9vw, 17px);
       color: var(--intro-ink);
-      line-height: 1.3;
-      white-space: nowrap;
+      line-height: 1.4;
     }
-    .timeline-card .tc-desc strong {
-      font-weight: 700;
+
+    /* Slide 5: all cards visible, some as placeholders */
+    .stage.slide-5 .timeline-card {
+      flex: 0 0 155px;
+      opacity: 1;
     }
-    .timeline-card[data-tc="3"],
-    .timeline-card[data-tc="4"],
-    .timeline-card[data-tc="5"],
-    .tc-move.tc-move-2 {
-      display: none;
+    /* Placeholder cards: hide content, show shape */
+    .timeline[data-visible-cards="1"] .timeline-card:not([data-tc="1"]) .tc-inner,
+    .timeline[data-visible-cards="2"] .timeline-card:not([data-tc="1"]):not([data-tc="2"]) .tc-inner {
+      opacity: 0;
     }
-    .timeline[data-cards4] .timeline-card[data-tc="3"],
-    .timeline[data-cards4] .timeline-card[data-tc="4"],
-    .timeline[data-cards4] .tc-move.tc-move-2 {
-      display: flex;
-      animation: cardFadeIn 0.5s ease both;
+    .timeline[data-visible-cards="1"] .timeline-card:not([data-tc="1"]),
+    .timeline[data-visible-cards="2"] .timeline-card:not([data-tc="1"]):not([data-tc="2"]) {
+      background: var(--ink2);
+      opacity: 0.07;
     }
-    .timeline[data-cards5] .timeline-card[data-tc="5"] {
-      display: flex;
-      animation: cardFadeIn 0.5s ease both;
+    .timeline[data-dim-before="6"] .timeline-card:not([data-tc="6"]):not([data-tc="7"]) {
+      opacity: 0.15;
     }
-    @keyframes cardFadeIn {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .timeline-card .tc-logos {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      gap: 22px;
-    }
-    .timeline-card .tc-logos img {
-      width: 48px;
-      height: 48px;
-      object-fit: contain;
-      border-radius: 6px;
-    }
-    .timeline-card .tc-logos img[src*="google"] {
-      width: 40px;
-      height: 40px;
-    }
-    .timeline-card .tc-logos .tc-meta-logo {
-      width: 40px;
-      height: 40px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      border-radius: 6px;
-      flex-shrink: 0;
-    }
-    .timeline-card .tc-logos .tc-meta-logo img {
-      width: 56px;
-      height: 56px;
-    }
-    .tc-move {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 12px;
-      font-weight: 500;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-      color: var(--ink2);
-      text-align: left;
-      padding: 18px 0 18px 32px;
+
+    /* Slide 6: all cards expand out at fixed width */
+    .stage.slide-6 .timeline-card {
+      flex: 0 0 155px;
+      opacity: 1;
     }
 
     /* Timeline highlight overlay */
@@ -982,8 +984,8 @@
         <p class="side-label">Agenda</p>
         <a class="nav-item active" data-nav="about" data-go="0">About</a>
         <a class="nav-item" data-nav="journey" data-go="4">Design Journey</a>
-        <a class="nav-item" data-nav="google" data-go="8">Featured Work</a>
-        <a class="nav-item" data-nav="today" data-go="16">Today's Focus</a>
+        <a class="nav-item" data-nav="google" data-go="7">Featured Work</a>
+        <a class="nav-item" data-nav="today" data-go="15">Today's Focus</a>
       </div>
     </nav>
 
@@ -1025,53 +1027,41 @@
       <div class="timeline-wrap">
         <h2 class="timeline-heading" id="tlHeading">My design journey</h2>
         <div class="timeline" id="tlRow">
-          <div class="tc-move">1st pivot: industrial design → UI/UX</div>
-          <div class="timeline-card" data-tc="1">
-            <div class="tc-text">
-              <div class="tc-year">2011 – 2014</div>
-              <div class="tc-desc"><strong>Undergraduate student</strong>, bachelor's in industrial design</div>
-            </div>
-            <div class="tc-logos">
-              <img src="images/logo/nationaltaipeiuniversityofeducation-logo.png" alt="" />
-              <img src="images/logo/牧貓GrazingcatDesign.jpg" alt="" />
-            </div>
-          </div>
-          <div class="timeline-card" data-tc="2">
-            <div class="tc-text">
-              <div class="tc-year">2015 – 2018</div>
-              <div class="tc-desc"><strong>Product designer</strong>, web products + tools</div>
-            </div>
-            <div class="tc-logos">
-              <img src="images/logo/asus-logo.jpg" alt="" />
-            </div>
-          </div>
-          <div class="tc-move tc-move-2">2nd pivot: Taiwan → United States</div>
-          <div class="timeline-card" data-tc="3">
-            <div class="tc-text">
-              <div class="tc-year">2019 – 2020</div>
-              <div class="tc-desc"><strong>Graduate student</strong>, master's in product design</div>
-            </div>
-            <div class="tc-logos">
-              <img src="images/logo/cmu-logo.png" alt="" />
-            </div>
-          </div>
-          <div class="timeline-card" data-tc="4">
-            <div class="tc-text">
-              <div class="tc-year">2020 – 2026</div>
-              <div class="tc-desc"><strong>Product designer</strong>, business tools + monetization</div>
-            </div>
-            <div class="tc-logos">
-              <img src="images/logo/enovational-logo.jpg" alt="" />
-              <img src="images/logo/google-logo.png" alt="" />
-              <span class="tc-meta-logo"><img src="images/logo/meta-logo.webp" alt="" /></span>
-            </div>
-          </div>
-          <div class="timeline-card" data-tc="5">
-            <div class="tc-text">
-              <div class="tc-year">Now & Next</div>
-              <div class="tc-desc"><strong>Product designer + AI builder</strong></div>
-            </div>
-          </div>
+          <div class="timeline-card" data-tc="1"><div class="tc-inner">
+            <div class="tc-year">2011</div>
+            <div class="tc-logo"><img src="images/logo/nationaltaipeiuniversityofeducation-logo.png" alt="" /></div>
+            <div class="tc-desc">Studied Industrial Design</div>
+          </div></div>
+          <div class="timeline-card" data-tc="2"><div class="tc-inner">
+            <div class="tc-year">2013</div>
+            <div class="tc-logo"><img src="images/logo/牧貓GrazingcatDesign.jpg" alt="" /></div>
+            <div class="tc-desc">Interned at web design studio</div>
+          </div></div>
+          <div class="timeline-card" data-tc="3"><div class="tc-inner">
+            <div class="tc-year">2015</div>
+            <div class="tc-logo"><img src="images/logo/asus-logo.jpg" alt="" /></div>
+            <div class="tc-desc">ZenFone GUI, Tools</div>
+          </div></div>
+          <div class="timeline-card" data-tc="4"><div class="tc-inner">
+            <div class="tc-year">2019</div>
+            <div class="tc-logo"><img src="images/logo/cmu-logo.png" alt="" /></div>
+            <div class="tc-desc">Studied Product Design</div>
+          </div></div>
+          <div class="timeline-card" data-tc="5"><div class="tc-inner">
+            <div class="tc-year">2020</div>
+            <div class="tc-logo"><img src="images/logo/enovational-logo.jpg" alt="" /></div>
+            <div class="tc-desc">Government Tools</div>
+          </div></div>
+          <div class="timeline-card" data-tc="6"><div class="tc-inner">
+            <div class="tc-year">2021</div>
+            <div class="tc-logo"><img src="images/logo/google-logo.png" alt="" /></div>
+            <div class="tc-desc">Search Ads</div>
+          </div></div>
+          <div class="timeline-card" data-tc="7"><div class="tc-inner">
+            <div class="tc-year">2023-NOW</div>
+            <div class="tc-logo"><img src="images/logo/meta-logo.webp" alt="" /></div>
+            <div class="tc-desc">Monetization, Biz Tools/AI</div>
+          </div></div>
           <div class="timeline-hl" id="tlHl"></div>
         </div>
       </div>
@@ -1339,9 +1329,10 @@
       { slide: 36, nav: 'about', label: 'Gather' },
       // My design journey
       { slide: 4, nav: 'journey', label: 'Title' },
-      { slide: 6, nav: 'journey', sub: 1, label: 'Journey', tlTitle: '' },
-      { slide: 6, nav: 'journey', sub: 2, label: 'Journey 2', tlTitle: '', tlCards4: true },
-      { slide: 6, nav: 'journey', sub: 3, label: 'AI builder', tlTitle: '', tlCards4: true, tlCards5: true },
+      { slide: 6, nav: 'journey', sub: 1, label: 'Journey',
+        tlTitle: 'From industrial design to 8+ years in product design', tlHl: [3,7] },
+      { slide: 6, nav: 'journey', sub: 2, label: 'Monetization',
+        tlTitle: 'Focused on business growth and monetization', tlHl: [6,7], tlDim: 6 },
       // Featured Works
       { slide: 7, nav: 'google', label: 'Title' },
       { slide: 8, nav: 'google', sub: 0, label: 'Search ads' },
